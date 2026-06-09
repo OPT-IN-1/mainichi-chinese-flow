@@ -210,6 +210,10 @@
       width: 340px; flex-shrink: 0; background: var(--card);
       border-left: 1px solid var(--border); overflow-y: auto;
       display: flex; flex-direction: column;
+      transition: width .2s, opacity .2s;
+    }
+    .panel.collapsed {
+      display: none;
     }
     .panel-header {
       padding: 14px 16px; border-bottom: 1px solid var(--border);
@@ -563,6 +567,7 @@ let dragState = null;
 let endpointDrag = null;
 let snapHighlight = null;
 let showEdgeListPanel = false;
+let panelVisible = true;
 let nextNodeNum = 1;
 
 const $ = id => document.getElementById(id);
@@ -707,7 +712,21 @@ function selectEdge(edgeId, opts = {}) {
   selectedEdgeId = edgeId;
   selectedNodeId = null;
   showEdgeListPanel = false;
+  panelVisible = true;
   if (opts.enableEdit) ensureEditMode(opts.quiet);
+  render();
+}
+
+function openPanel() {
+  panelVisible = true;
+}
+
+function closePanel() {
+  panelVisible = false;
+  selectedNodeId = null;
+  selectedEdgeId = null;
+  showEdgeListPanel = false;
+  edgeAddMode = null;
   render();
 }
 
@@ -971,6 +990,7 @@ function renderNodes(flow) {
       if (edgeAddMode) { completeEdgeAdd(node.id); return; }
       selectedNodeId = node.id;
       selectedEdgeId = null;
+      panelVisible = true;
       render();
     });
 
@@ -1292,6 +1312,9 @@ function bindEdgeListItems(root) {
 
 // ─── Panel ───
 function renderPanel() {
+  $('panel').classList.toggle('collapsed', !panelVisible);
+  if (!panelVisible) return;
+
   const content = $('panelContent');
   if (selectedEdgeId) { renderEdgePanel(content); return; }
   if (selectedNodeId) { renderNodePanel(content); return; }
@@ -1325,7 +1348,7 @@ function renderEdgeListPanel(content) {
       <button class="btn primary" id="btnAddEdgeFromList">＋ 矢印を追加</button>
     </div>`;
   bindEdgeListItems(content);
-  $('btnCloseEdgeList').onclick = () => { showEdgeListPanel = false; renderPanel(); };
+  $('btnCloseEdgeList').onclick = () => closePanel();
   $('btnAddEdgeFromList').onclick = () => {
     ensureEditMode();
     showEdgeListPanel = false;
@@ -1714,8 +1737,9 @@ function applyJson() {
 
 // ─── Keyboard ───
 document.addEventListener('keydown', e => {
-  if (!editMode) return;
   if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'Escape' && panelVisible) { closePanel(); return; }
+  if (!editMode) return;
   if (e.key === 'Delete' || e.key === 'Backspace') {
     if (selectedNodeId) { e.preventDefault(); deleteNode(selectedNodeId); }
     else if (selectedEdgeId) { e.preventDefault(); deleteEdge(selectedEdgeId); }
@@ -1738,6 +1762,7 @@ $('canvasWrap').addEventListener('click', e => {
   if (!edgeAddMode) {
     selectedNodeId = null;
     selectedEdgeId = null;
+    panelVisible = false;
     render();
   }
 });
@@ -1750,6 +1775,7 @@ $('btnEdgeList').onclick = () => {
   selectedNodeId = null;
   selectedEdgeId = null;
   showEdgeListPanel = true;
+  panelVisible = true;
   render();
 };
 $('btnCopyJson').onclick = copyJson;
@@ -1768,11 +1794,9 @@ $('btnReset').onclick = () => {
   render();
   showToast('初期データに戻しました');
 };
-$('panelClose').onclick = () => {
-  selectedNodeId = null;
-  selectedEdgeId = null;
-  showEdgeListPanel = false;
-  render();
+$('panelClose').onclick = e => {
+  e.stopPropagation();
+  closePanel();
 };
 $('jsonModalCancel').onclick = () => $('jsonModal').classList.remove('open');
 $('jsonModalApply').onclick = applyJson;
