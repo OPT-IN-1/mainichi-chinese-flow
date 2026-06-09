@@ -396,6 +396,7 @@ const LANE_H = 110;
 const LABEL_W = 120;
 const STORAGE_KEY = 'mainichi-chinese-flow-v2';
 const PUBLISHED_DATA_FILE = 'published-data.json';
+const PUBLIC_VIEW_FLOW = 'hatten';
 const SNAP_DIST = 32;
 
 const EDGE_TYPES = {
@@ -568,6 +569,13 @@ const $ = id => document.getElementById(id);
 
 function isWebViewer() {
   return location.protocol === 'https:' || location.protocol === 'http:';
+}
+
+function getVisibleFlows() {
+  if (isWebViewer() && data.flows[PUBLIC_VIEW_FLOW]) {
+    return { [PUBLIC_VIEW_FLOW]: data.flows[PUBLIC_VIEW_FLOW] };
+  }
+  return data.flows;
 }
 
 function loadFromLocalStorage() {
@@ -864,7 +872,7 @@ function renderPublishedBanner() {
     document.querySelector('.legend').after(el);
   }
   const d = new Date(publishedMeta.updatedAt);
-  el.textContent = '公開版（全員同じ内容）｜最終更新: ' + d.toLocaleString('ja-JP');
+  el.textContent = 'ハッテン 公開版｜最終更新: ' + d.toLocaleString('ja-JP');
 }
 
 function render() {
@@ -877,6 +885,11 @@ function render() {
 
 function renderTabs() {
   const tabs = $('flowTabs');
+  if (isWebViewer()) {
+    tabs.style.display = 'none';
+    return;
+  }
+  tabs.style.display = '';
   tabs.innerHTML = '';
   Object.values(data.flows).forEach(flow => {
     const btn = document.createElement('button');
@@ -1767,6 +1780,9 @@ $('jsonModalApply').onclick = applyJson;
 async function initApp() {
   data = await loadData();
   migrateAll(data);
+  if (isWebViewer() && data.flows[PUBLIC_VIEW_FLOW]) {
+    currentFlowId = PUBLIC_VIEW_FLOW;
+  }
   render();
 }
 
