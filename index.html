@@ -297,7 +297,8 @@
     <button class="btn" id="btnAddEdge">＋ 矢印追加</button>
     <button class="btn" id="btnEdgeList">矢印一覧</button>
     <button class="btn" id="btnCopyJson">JSONをコピー</button>
-    <button class="btn primary" id="btnSaveJson">JSON保存</button>
+    <button class="btn" id="btnSaveJson">JSON保存</button>
+    <button class="btn primary" id="btnPublish">公開用に書き出す</button>
     <button class="btn" id="btnImportJson">JSON読込</button>
     <button class="btn" id="btnPrint">印刷</button>
     <button class="btn danger" id="btnReset">初期データに戻す</button>
@@ -394,6 +395,7 @@ const NODE_H_DEF = 56;
 const LANE_H = 110;
 const LABEL_W = 120;
 const STORAGE_KEY = 'mainichi-chinese-flow-v2';
+const PUBLISHED_DATA_FILE = 'published-data.json';
 const SNAP_DIST = 32;
 
 const EDGE_TYPES = {
@@ -549,8 +551,9 @@ const DEFAULT_DATA = {
   }
 };
 
-let data = loadData();
+let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let currentFlowId = 'common';
+let publishedMeta = null;
 let editMode = false;
 let selectedNodeId = null;
 let selectedEdgeId = null;
@@ -563,24 +566,76 @@ let nextNodeNum = 1;
 
 const $ = id => document.getElementById(id);
 
-function loadData() {
+function isWebViewer() {
+  return location.protocol === 'https:' || location.protocol === 'http:';
+}
+
+function loadFromLocalStorage() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      migrateAll(parsed);
-      return parsed;
-    }
+    if (saved) return JSON.parse(saved);
     const v1 = localStorage.getItem('mainichi-chinese-flow-v1');
-    if (v1) {
-      const parsed = JSON.parse(v1);
-      migrateAll(parsed);
-      return parsed;
-    }
+    if (v1) return JSON.parse(v1);
   } catch (e) { /* ignore */ }
+  return null;
+}
+
+async function fetchPublishedData() {
+  try {
+    const res = await fetch(PUBLISHED_DATA_FILE + '?t=' + Date.now());
+    if (!res.ok) return null;
+    return JSON.parse(await res.text());
+  } catch (e) {
+    return null;
+  }
+}
+
+async function loadData() {
+  const published = await fetchPublishedData();
+  if (published?.flows) {
+    migrateAll(published);
+    publishedMeta = published.meta || null;
+    if (isWebViewer()) return published;
+  }
+
+  const local = loadFromLocalStorage();
+  if (local?.flows) {
+    migrateAll(local);
+    return local;
+  }
+
+  if (published?.flows) return published;
+
   const d = JSON.parse(JSON.stringify(DEFAULT_DATA));
   migrateAll(d);
   return d;
+}
+
+function downloadJsonFile(filename, obj) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportForPublish() {
+  saveData();
+  const payload = JSON.parse(JSON.stringify(data));
+  payload.meta = payload.meta || {};
+  payload.meta.updatedAt = new Date().toISOString();
+  payload.meta.publishedBy = 'manual-export';
+  downloadJsonFile(PUBLISHED_DATA_FILE, payload);
+  showToast('公開用ファイルをダウンロードしました');
+  alert(
+    '「' + PUBLISHED_DATA_FILE + '」をダウンロードしました。\n\n' +
+    '【公開の手順】\n' +
+    '1. ダウンロードしたファイルをこのツールと同じフォルダに置く\n' +
+    '2. Cursorに「公開して」と伝える（または git push）\n' +
+    '3. 全員が見るURL:\n' +
+    '   https://opt-in-1.github.io/mainichi-chinese-flow/'
+  );
 }
 
 function migrateAll(d) {
@@ -795,7 +850,24 @@ function getEdgeGeometry(edge, flow) {
 }
 
 // ─── Render ───
+function renderPublishedBanner() {
+  let el = document.getElementById('publishedBanner');
+  if (!isWebViewer() || !publishedMeta?.updatedAt) {
+    if (el) el.remove();
+    return;
+  }
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'publishedBanner';
+    el.style.cssText = 'background:#e8f5e9;color:#2e7d32;text-align:center;padding:6px 12px;font-size:12px;font-weight:600;border-bottom:1px solid #c8e6c9';
+    document.querySelector('.legend').after(el);
+  }
+  const d = new Date(publishedMeta.updatedAt);
+  el.textContent = '公開版（全員同じ内容）｜最終更新: ' + d.toLocaleString('ja-JP');
+}
+
 function render() {
+  renderPublishedBanner();
   renderTabs();
   renderLaneLabels();
   renderBoard();
@@ -1667,7 +1739,8 @@ $('btnEdgeList').onclick = () => {
   render();
 };
 $('btnCopyJson').onclick = copyJson;
-$('btnSaveJson').onclick = () => { saveData(); showToast('保存しました'); };
+$('btnSaveJson').onclick = () => { saveData(); showToast('ブラウザに保存しました'); };
+$('btnPublish').onclick = exportForPublish;
 $('btnImportJson').onclick = () => openJsonModal('JSON読込', '', true);
 $('btnPrint').onclick = () => window.print();
 $('btnReset').onclick = () => {
@@ -1690,7 +1763,13 @@ $('panelClose').onclick = () => {
 $('jsonModalCancel').onclick = () => $('jsonModal').classList.remove('open');
 $('jsonModalApply').onclick = applyJson;
 
-render();
+async function initApp() {
+  data = await loadData();
+  migrateAll(data);
+  render();
+}
+
+initApp();
 </script>
 </body>
 </html>
