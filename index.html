@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>毎日中国語 全体フロー</title>
+  <style>
+    :root {
+      --student: #f3a03e;
+      --student-bg: #fff8e1;
+      --ops: #7b1fa2;
+      --ops-bg: #f3e5f5;
+      --system: #0288d1;
+      --system-bg: #e1f5fe;
+      --coach: #c62828;
+      --coach-bg: #ffebee;
+      --branch: #1565c0;
+      --branch-bg: #e3f2fd;
+      --grid: #e8eaed;
+      --text: #202124;
+      --text-sub: #5f6368;
+      --border: #dadce0;
+      --card: #ffffff;
+      --primary: #1a73e8;
+      --shadow: 0 1px 3px rgba(0,0,0,.12);
+      --lane-label-w: 120px;
+      --lane-h: 110px;
+      --node-w: 160px;
+      --node-min-h: 56px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+      background: #f0f2f5; color: var(--text); min-height: 100vh;
+      display: flex; flex-direction: column; user-select: none;
+    }
+
+    .header {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 14px 20px; display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 16px; flex-shrink: 0; z-index: 30;
+    }
+    .header-left h1 { font-size: 18px; font-weight: 700; }
+    .header-left p { font-size: 12px; color: var(--text-sub); margin-top: 4px; max-width: 560px; line-height: 1.5; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card); font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: inherit; color: var(--text); transition: .15s; white-space: nowrap;
+    }
+    .btn:hover { background: #f8f9fa; }
+    .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn.active { background: #e8f0fe; border-color: var(--primary); color: var(--primary); }
+    .btn.danger { color: #c62828; border-color: #ef9a9a; }
+    .edit-badge {
+      font-size: 11px; padding: 3px 8px; border-radius: 20px;
+      background: #fce8e6; color: #c62828; font-weight: 600; display: none;
+    }
+    .edit-badge.on { display: inline-block; }
+
+    .legend {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 10px 20px; display: flex; gap: 16px; flex-wrap: wrap;
+      font-size: 11px; flex-shrink: 0;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 2px solid; }
+    .legend-dot.student { border-color: var(--student); background: var(--student-bg); }
+    .legend-dot.ops { border-color: var(--ops); background: var(--ops-bg); }
+    .legend-dot.system { border-color: var(--system); background: var(--system-bg); }
+    .legend-dot.coach { border-color: var(--coach); background: var(--coach-bg); }
+    .legend-dot.branch { border-color: var(--branch); background: var(--branch-bg); }
+    .edit-hint { font-size: 11px; color: var(--text-sub); margin-left: auto; line-height: 1.5; }
+
+    .main { display: flex; flex: 1; overflow: hidden; }
+
+    .canvas-wrap {
+      flex: 1; overflow: auto; position: relative;
+      background: var(--grid);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .canvas-inner { position: relative; min-width: 100%; min-height: 100%; }
+    .phase-header {
+      position: sticky; top: 0; z-index: 15;
+      background: rgba(255,255,255,.95); backdrop-filter: blur(4px);
+      border-bottom: 2px solid var(--primary);
+      padding: 8px 20px 8px calc(var(--lane-label-w) + 16px);
+      font-size: 13px; font-weight: 700; color: var(--primary);
+    }
+
+    .board {
+      position: relative;
+      margin-left: var(--lane-label-w);
+      min-height: calc(var(--lane-h) * 5);
+    }
+    .lane-stripes { position: absolute; inset: 0; pointer-events: none; }
+    .lane-stripe {
+      height: var(--lane-h); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding-left: 12px;
+      font-size: 11px; font-weight: 700;
+    }
+    .lane-stripe.student { background: rgba(255,248,225,.45); color: #e65100; }
+    .lane-stripe.sales { background: rgba(243,229,245,.3); color: var(--ops); }
+    .lane-stripe.cs { background: rgba(243,229,245,.2); color: #4a148c; }
+    .lane-stripe.system { background: rgba(225,245,254,.4); color: #01579b; }
+    .lane-stripe.coach { background: rgba(255,235,238,.4); color: var(--coach); }
+
+    .lane-labels {
+      position: absolute; left: calc(-1 * var(--lane-label-w)); top: 0;
+      width: var(--lane-label-w); pointer-events: none; z-index: 3;
+    }
+    .lane-label-fixed {
+      height: var(--lane-h); display: flex; align-items: center;
+      padding: 10px 12px; font-size: 11px; font-weight: 700;
+      border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      position: sticky; left: 0;
+    }
+    .lane-label-fixed.student { background: var(--student-bg); color: #e65100; }
+    .lane-label-fixed.sales { background: var(--ops-bg); color: var(--ops); }
+    .lane-label-fixed.cs { background: var(--ops-bg); color: #4a148c; }
+    .lane-label-fixed.system { background: var(--system-bg); color: #01579b; }
+    .lane-label-fixed.coach { background: var(--coach-bg); color: var(--coach); }
+
+    .edges-svg { position: absolute; inset: 0; overflow: visible; }
+    .edges-back { z-index: 1; pointer-events: none; }
+    .edges-front { z-index: 4; pointer-events: none; }
+    .edges-front .edge-hit,
+    .edges-front .edge-label-hit,
+    .edges-front .bend-handle,
+    .edges-front .endpoint-handle { pointer-events: all; }
+    .edge-hit { fill: none; stroke: transparent; stroke-width: 22; cursor: pointer; }
+    .edge-hit:hover { stroke: rgba(26,115,232,.12); }
+    .edge-hit.selected { stroke: rgba(26,115,232,.18); }
+    .edge-label-hit { fill: transparent; cursor: pointer; }
+    .edge-path { fill: none; pointer-events: none; }
+    .edge-label { font-size: 10px; fill: var(--text-sub); pointer-events: none; }
+    .bend-handle {
+      fill: #fff; stroke: var(--primary); stroke-width: 2;
+      cursor: grab; pointer-events: all;
+    }
+    .bend-handle:hover { fill: #e8f0fe; }
+    .endpoint-handle {
+      stroke-width: 2.5; cursor: grab; pointer-events: all;
+    }
+    .endpoint-handle.from { fill: #e8f5e9; stroke: #2e7d32; }
+    .endpoint-handle.to { fill: #fff3e0; stroke: #ef6c00; }
+    .endpoint-handle:hover { transform-origin: center; filter: drop-shadow(0 0 3px rgba(0,0,0,.3)); }
+    .endpoint-handle.dragging { cursor: grabbing; }
+    .node.snap-target { outline: 3px dashed #2e7d32; outline-offset: 3px; }
+    .port.snap-highlight { background: #2e7d32 !important; border-color: #2e7d32 !important; opacity: 1 !important; transform: scale(1.4); }
+    .side-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    .side-btn {
+      padding: 6px 4px; font-size: 11px; border: 1px solid var(--border);
+      border-radius: 6px; background: #fff; cursor: pointer; font-family: inherit;
+    }
+    .side-btn.active { background: #e8f0fe; border-color: var(--primary); color: var(--primary); font-weight: 700; }
+    .edge-type-preview { font-size: 11px; color: var(--text-sub); margin-top: 4px; }
+
+    .nodes-layer { position: absolute; inset: 0; z-index: 2; }
+
+    .node {
+      position: absolute; width: var(--node-w); min-height: var(--node-min-h);
+      background: var(--card); border: 2.5px solid; border-radius: 12px;
+      padding: 8px 10px; cursor: pointer; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .node:hover { box-shadow: 0 4px 14px rgba(0,0,0,.14); z-index: 5; }
+    .node.selected { outline: 3px solid var(--primary); outline-offset: 2px; z-index: 6; }
+    .node.student { border-color: var(--student); }
+    .node.ops { border-color: var(--ops); }
+    .node.system { border-color: var(--system); }
+    .node.coach { border-color: var(--coach); }
+    .node.branch { border-color: var(--branch); }
+    .node-id { font-size: 10px; color: #888; font-weight: 600; margin-bottom: 2px; }
+    .node-label {
+      font-size: 12px; font-weight: 700; line-height: 1.4; color: #000;
+      word-break: break-word;
+    }
+    .node-label[contenteditable="true"] {
+      outline: 2px solid var(--primary); border-radius: 4px;
+      background: #fffde7; cursor: text; user-select: text;
+    }
+    .node.editable { cursor: grab; }
+    .node.dragging { opacity: .75; cursor: grabbing; z-index: 20; }
+    .node.edge-from { outline: 3px dashed var(--system); }
+
+    .port {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--primary);
+      opacity: 0; transition: opacity .15s; z-index: 7;
+    }
+    .node.editable .port { opacity: 1; }
+    .port:hover { background: var(--primary); transform: scale(1.2); }
+    .port.right { right: -6px; top: 50%; transform: translateY(-50%); }
+    .port.left { left: -6px; top: 50%; transform: translateY(-50%); }
+    .port.top { top: -6px; left: 50%; transform: translateX(-50%); }
+    .port.bottom { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+    .resize-handle {
+      position: absolute; right: -4px; bottom: -4px; width: 12px; height: 12px;
+      background: var(--primary); border-radius: 2px; cursor: nwse-resize;
+      opacity: 0; z-index: 8;
+    }
+    .node.editable.selected .resize-handle { opacity: 1; }
+
+    .panel {
+      width: 340px; flex-shrink: 0; background: var(--card);
+      border-left: 1px solid var(--border); overflow-y: auto;
+      display: flex; flex-direction: column;
+    }
+    .panel-header {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .panel-header h2 { font-size: 14px; font-weight: 700; }
+    .panel-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-sub); }
+    .panel-section { margin-bottom: 14px; padding: 0 16px; }
+    .panel-section:first-of-type { padding-top: 16px; }
+    .panel-section label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: var(--text-sub); margin-bottom: 5px;
+    }
+    .panel-section input, .panel-section textarea, .panel-section select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 13px; font-family: inherit;
+    }
+    .panel-section textarea { min-height: 72px; resize: vertical; }
+    .panel-section .value { font-size: 13px; line-height: 1.6; }
+    .panel-empty { padding: 40px 20px; text-align: center; color: var(--text-sub); font-size: 13px; }
+    .panel-actions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+    .panel-links a { color: var(--primary); word-break: break-all; font-size: 13px; }
+    .edge-list { max-height: 160px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; }
+    .edge-list-item {
+      padding: 8px 10px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f3f4;
+    }
+    .edge-list-item:hover { background: #f8f9fa; }
+    .edge-list-item.active { background: #e8f0fe; color: var(--primary); font-weight: 600; }
+    .edge-list-all { max-height: 280px; }
+    .panel-hint-box {
+      margin: 0 16px 12px; padding: 10px 12px; background: #e8f0fe;
+      border-radius: 8px; font-size: 12px; line-height: 1.5; color: #1557b0;
+    }
+
+    .flow-tabs {
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; flex-shrink: 0;
+    }
+    .flow-tab {
+      padding: 12px 16px; font-size: 12px; font-weight: 600;
+      border: none; background: none; cursor: pointer; color: var(--text-sub);
+      border-bottom: 3px solid transparent; white-space: nowrap; font-family: inherit;
+    }
+    .flow-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .toast {
+      position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+      background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px;
+      font-size: 13px; z-index: 100; opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      z-index: 50; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card); border-radius: 12px; padding: 20px;
+      width: min(560px, 90vw); max-height: 80vh; overflow: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,.2);
+    }
+    .modal textarea {
+      width: 100%; min-height: 240px; font-family: monospace;
+      font-size: 11px; padding: 10px; border: 1px solid var(--border); border-radius: 8px;
+    }
+
+    @media print {
+      .header-actions, .flow-tabs, .panel, .edit-hint, .btn { display: none !important; }
+      .canvas-wrap { overflow: visible; }
+      .node { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <h1>毎日中国語 全体フロー</h1>
+    <p>成約〜卒業までの流れを可視化。<span class="edit-badge" id="editBadge">編集モード ON</span></p>
+  </div>
+  <div class="header-actions">
+    <button class="btn" id="btnEdit">編集モード OFF</button>
+    <button class="btn" id="btnAddNode">＋ ボックス追加</button>
+    <button class="btn" id="btnAddEdge">＋ 矢印追加</button>
+    <button class="btn" id="btnEdgeList">矢印一覧</button>
+    <button class="btn" id="btnCopyJson">JSONをコピー</button>
+    <button class="btn primary" id="btnSaveJson">JSON保存</button>
+    <button class="btn" id="btnImportJson">JSON読込</button>
+    <button class="btn" id="btnPrint">印刷</button>
+    <button class="btn danger" id="btnReset">初期データに戻す</button>
+  </div>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot student"></span>受講生</div>
+  <div class="legend-item"><span class="legend-dot ops"></span>運営・CS・セールス</div>
+  <div class="legend-item"><span class="legend-dot system"></span>システム・自動化</div>
+  <div class="legend-item"><span class="legend-dot coach"></span>コーチ</div>
+  <div class="legend-item"><span class="legend-dot branch"></span>分岐・判定</div>
+  <span class="edit-hint" id="editHint">矢印をクリックで選択・編集｜「矢印一覧」から既存の矢印を選べます｜緑●出発・橙●着地・青●経路</span>
+</div>
+
+<div class="main">
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="canvas-inner" id="canvasInner">
+      <div class="phase-header" id="phaseHeader"></div>
+      <div class="board" id="board">
+        <div class="lane-labels" id="laneLabels"></div>
+        <div class="lane-stripes" id="laneStripes"></div>
+        <svg class="edges-svg edges-back" id="edgesSvg">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#9aa0a6"/>
+            </marker>
+            <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#0288d1"/>
+            </marker>
+          <marker id="arrowhead-primary" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#1a73e8"/>
+          </marker>
+          <marker id="arrowhead-gray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#9aa0a6"/>
+          </marker>
+          <marker id="arrowhead-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#e65100"/>
+          </marker>
+          <marker id="arrowhead-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#7b1fa2"/>
+          </marker>
+          <marker id="arrowhead-gray-start" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto">
+            <polygon points="8 0, 0 3, 8 6" fill="#9aa0a6"/>
+          </marker>
+        </defs>
+          <g id="edgesGroup"></g>
+        </svg>
+        <div class="nodes-layer" id="nodesLayer"></div>
+        <svg class="edges-svg edges-front" id="edgesHitSvg">
+          <g id="edgesHitGroup"></g>
+          <g id="handlesGroup"></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <aside class="panel" id="panel">
+    <div class="panel-header">
+      <h2 id="panelTitle">詳細</h2>
+      <button class="panel-close" id="panelClose">×</button>
+    </div>
+    <div id="panelContent">
+      <div class="panel-empty">ボックスまたは矢印をクリック</div>
+    </div>
+  </aside>
+</div>
+
+<nav class="flow-tabs" id="flowTabs"></nav>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="jsonModal">
+  <div class="modal">
+    <h3 id="jsonModalTitle">JSON</h3>
+    <textarea id="jsonTextarea"></textarea>
+    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" id="jsonModalCancel">キャンセル</button>
+      <button class="btn primary" id="jsonModalApply">適用</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LANES = [
+  { id: 'student', label: '受講生' },
+  { id: 'sales', label: 'マーケ・セールス' },
+  { id: 'cs', label: 'CS' },
+  { id: 'system', label: 'システム・自動化' },
+  { id: 'coach', label: 'コーチ' }
+];
+
+const NODE_W_DEF = 160;
+const NODE_H_DEF = 56;
+const LANE_H = 110;
+const LABEL_W = 120;
+const STORAGE_KEY = 'mainichi-chinese-flow-v2';
+const SNAP_DIST = 32;
+
+const EDGE_TYPES = {
+  normal:        { label: '通常（実線）', color: '#9aa0a6', width: 1.8, dash: null, marker: 'arrowhead-gray' },
+  trigger:       { label: 'トリガー（破線・青）', color: '#0288d1', width: 1.8, dash: '6 4', marker: 'arrowhead-blue' },
+  dotted:        { label: '点線', color: '#9aa0a6', width: 1.8, dash: '2 4', marker: 'arrowhead-gray' },
+  strong:        { label: '強調（太線）', color: '#5f6368', width: 3, dash: null, marker: 'arrowhead-gray' },
+  feedback:      { label: '戻り（破線・橙）', color: '#e65100', width: 1.8, dash: '5 3', marker: 'arrowhead-orange' },
+  conditional:   { label: '分岐（破線・紫）', color: '#7b1fa2', width: 1.8, dash: '4 4', marker: 'arrowhead-purple' },
+  line:          { label: '線のみ（矢印なし）', color: '#9aa0a6', width: 1.5, dash: null, marker: null },
+  bidirectional: { label: '双方向', color: '#5f6368', width: 1.8, dash: null, marker: 'arrowhead-gray', markerStart: 'arrowhead-gray-start' }
+};
+
+const DEFAULT_DATA = {
+  meta: { title: '毎日中国語 全体フロー', version: 2, updatedAt: new Date().toISOString() },
+  flows: {
+    common: {
+      id: 'common', label: '成約後共通', phase: 'Phase 0：成約後オンボーディング',
+      nodes: [
+        { id: 'C-01', label: '成約完了', lane: 'student', type: 'student', col: 0, details: { procedure: '契約書締結・決済完了を確認', tools: '契約管理スプシ', owner: 'セールス', duration: '—', sopLink: '' }},
+        { id: 'C-02', label: 'LINE登録', lane: 'student', type: 'student', col: 1, details: { procedure: '案内URLから公式LINEを友だち追加', tools: 'LINE', owner: '受講生', duration: '5分', sopLink: '' }},
+        { id: 'C-03', label: '初回メッセージ受信', lane: 'student', type: 'student', col: 2, details: { procedure: 'ウェルカムメッセージを確認', tools: 'LINE', owner: '受講生', duration: '5分', sopLink: '' }},
+        { id: 'C-04', label: 'はじめにページ確認', lane: 'student', type: 'student', col: 3, details: { procedure: '学習の進め方を読む', tools: 'はじめにページ', owner: '受講生', duration: '15分', sopLink: '' }},
+        { id: 'C-05', label: 'オンボーディング動画視聴', lane: 'student', type: 'student', col: 4, details: { procedure: 'サービス全体像の動画を視聴', tools: '動画配信', owner: '受講生', duration: '20分', sopLink: '' }},
+        { id: 'C-06', label: '初回予約', lane: 'student', type: 'student', col: 5, details: { procedure: '初回セッションを予約', tools: '予約システム', owner: '受講生', duration: '5分', sopLink: '' }},
+        { id: 'C-07', label: '事前ヒアリング回答', lane: 'student', type: 'student', col: 6, details: { procedure: 'フォームに入力', tools: 'Googleフォーム', owner: '受講生', duration: '10分', sopLink: '' }},
+        { id: 'C-09', label: '個別相談実施', lane: 'sales', type: 'ops', col: 0, details: { procedure: 'ヒアリング・クロージング', tools: 'Zoom', owner: 'セールス', duration: '60分', sopLink: '' }},
+        { id: 'C-10', label: '入力シート記入', lane: 'sales', type: 'ops', col: 1, details: { procedure: '成約情報を転記', tools: '成約入力シート', owner: 'セールス', duration: '10分', sopLink: '' }},
+        { id: 'C-11', label: '契約ステータス更新', lane: 'sales', type: 'ops', col: 2, details: { procedure: 'ステータスを成約に', tools: '契約管理スプシ', owner: 'セールス', duration: '3分', sopLink: '' }},
+        { id: 'C-12', label: 'GASトリガー発火', lane: 'system', type: 'system', col: 3, details: { procedure: '成約検知で自動処理', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-13', label: '情報抽出', lane: 'system', type: 'system', col: 4, details: { procedure: 'マスタから取得', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-14', label: '受講生シート転記', lane: 'system', type: 'system', col: 5, details: { procedure: '各シートへ転記', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-15', label: 'Chatwork通知', lane: 'system', type: 'system', col: 6, details: { procedure: '新規成約を通知', tools: 'Chatwork', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-16', label: '予約ログ記録', lane: 'system', type: 'system', col: 5, row: 1, details: { procedure: '予約を記録', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-17', label: 'ヒアリング照合', lane: 'system', type: 'system', col: 6, row: 1, details: { procedure: 'フォーム照合', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-18', label: '初回予約完了通知', lane: 'system', type: 'system', col: 7, details: { procedure: 'Chatwork通知', tools: 'Chatwork', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'C-20', label: 'オンボーディング確認', lane: 'cs', type: 'ops', col: 4, details: { procedure: '初期対応をモニタ', tools: '受講生管理スプシ', owner: 'CS', duration: '随時', sopLink: '' }},
+        { id: 'C-21', label: '通知受信', lane: 'coach', type: 'coach', col: 6, details: { procedure: '担当通知を確認', tools: 'Chatwork', owner: 'コーチ', duration: '5分', sopLink: '' }},
+        { id: 'C-22', label: '担当情報確認', lane: 'coach', type: 'coach', col: 7, details: { procedure: 'プロフィール確認', tools: '受講生シート', owner: 'コーチ', duration: '15分', sopLink: '' }},
+        { id: 'C-28', label: 'LINEグループ作成', lane: 'coach', type: 'coach', col: 8, details: { procedure: 'グループ作成・共有', tools: 'LINE', owner: 'コーチ', duration: '10分', sopLink: '' }}
+      ],
+      edges: [
+        { id: 'ce1', from: 'C-01', to: 'C-02' }, { id: 'ce2', from: 'C-02', to: 'C-03' },
+        { id: 'ce3', from: 'C-03', to: 'C-04' }, { id: 'ce4', from: 'C-04', to: 'C-05' },
+        { id: 'ce5', from: 'C-05', to: 'C-06' }, { id: 'ce6', from: 'C-06', to: 'C-07' },
+        { id: 'ce7', from: 'C-09', to: 'C-10' }, { id: 'ce8', from: 'C-10', to: 'C-11' },
+        { id: 'ce9', from: 'C-11', to: 'C-12', trigger: true }, { id: 'ce10', from: 'C-12', to: 'C-13' },
+        { id: 'ce11', from: 'C-13', to: 'C-14' }, { id: 'ce12', from: 'C-14', to: 'C-15' },
+        { id: 'ce13', from: 'C-15', to: 'C-21', trigger: true }, { id: 'ce14', from: 'C-21', to: 'C-22' },
+        { id: 'ce15', from: 'C-06', to: 'C-16', trigger: true }, { id: 'ce16', from: 'C-07', to: 'C-17', trigger: true },
+        { id: 'ce17', from: 'C-17', to: 'C-18' }, { id: 'ce18', from: 'C-18', to: 'C-28', trigger: true },
+        { id: 'ce19', from: 'C-14', to: 'C-20', trigger: true }
+      ]
+    },
+    ocu: {
+      id: 'ocu', label: 'OCU', phase: 'Phase 1：OCU 学習フロー',
+      nodes: [
+        { id: 'O-01', label: 'OCUアカウント発行', lane: 'cs', type: 'ops', col: 0, details: { procedure: 'ログイン情報送付', tools: 'OCU管理画面', owner: 'CS', duration: '1営業日', sopLink: '' }},
+        { id: 'O-02', label: 'カリキュラム案内', lane: 'student', type: 'student', col: 1, details: { procedure: '学習スケジュール確認', tools: 'OCU', owner: '受講生', duration: '30分', sopLink: '' }},
+        { id: 'O-03', label: '日次学習実施', lane: 'student', type: 'student', col: 2, details: { procedure: '毎日の課題', tools: 'OCUアプリ', owner: '受講生', duration: '30分/日', sopLink: '' }},
+        { id: 'O-04', label: '週次チェック', lane: 'coach', type: 'coach', col: 3, details: { procedure: '進捗確認', tools: 'OCU', owner: 'コーチ', duration: '15分/週', sopLink: '' }},
+        { id: 'O-05', label: '中間テスト', lane: 'student', type: 'student', col: 4, details: { procedure: '定着度チェック', tools: 'OCU', owner: '受講生', duration: '60分', sopLink: '' }},
+        { id: 'O-06', label: '学習停滞アラート', lane: 'system', type: 'system', col: 3, row: 1, details: { procedure: '未ログイン通知', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'O-07', label: 'フォロー連絡', lane: 'cs', type: 'ops', col: 4, row: 1, details: { procedure: '停滞者フォロー', tools: 'LINE', owner: 'CS', duration: '15分', sopLink: '' }},
+        { id: 'O-08', label: 'OCU修了判定', lane: 'system', type: 'branch', col: 5, details: { procedure: '完了確認', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'O-09', label: 'OCU卒業・次商品へ', lane: 'cs', type: 'ops', col: 6, details: { procedure: '次フェーズ案内', tools: '受講生管理スプシ', owner: 'CS', duration: '30分', sopLink: '' }}
+      ],
+      edges: [
+        { id: 'oe1', from: 'O-01', to: 'O-02' }, { id: 'oe2', from: 'O-02', to: 'O-03' },
+        { id: 'oe3', from: 'O-03', to: 'O-04' }, { id: 'oe4', from: 'O-03', to: 'O-06', trigger: true },
+        { id: 'oe5', from: 'O-06', to: 'O-07' }, { id: 'oe6', from: 'O-04', to: 'O-05' },
+        { id: 'oe7', from: 'O-05', to: 'O-08' }, { id: 'oe8', from: 'O-08', to: 'O-09' }
+      ]
+    },
+    hatten: {
+      id: 'hatten', label: 'ハッテン', phase: 'Phase 2：ハッテン 学習フロー',
+      nodes: [
+        { id: 'H-01', label: 'ハッテン受講開始', lane: 'student', type: 'student', col: 0, details: { procedure: '教材へアクセス', tools: 'ハッテン教材', owner: '受講生', duration: '—', sopLink: '' }},
+        { id: 'H-02', label: '講義スケジュール共有', lane: 'cs', type: 'ops', col: 0, row: 1, details: { procedure: '日程・Zoom案内', tools: '講義スケジュール管理スプシ', owner: 'CS', duration: '10分', sopLink: '' }},
+        { id: 'H-03', label: 'リアルタイム講義参加', lane: 'student', type: 'student', col: 1, details: { procedure: '講義に参加', tools: 'Zoom', owner: '受講生', duration: '90分/回', sopLink: '' }},
+        { id: 'H-04', label: '課題提出', lane: 'student', type: 'student', col: 2, details: { procedure: '宿題提出', tools: '提出フォーム', owner: '受講生', duration: '60分/週', sopLink: '' }},
+        { id: 'H-05', label: '講師フィードバック', lane: 'coach', type: 'coach', col: 3, details: { procedure: '課題コメント', tools: 'スプシ', owner: '講師', duration: '20分/週', sopLink: '' }},
+        { id: 'H-06', label: '欠席フォロー', lane: 'cs', type: 'ops', col: 2, row: 1, details: { procedure: '録画案内', tools: 'LINE', owner: 'CS', duration: '10分', sopLink: '' }},
+        { id: 'H-07', label: 'レベル判定テスト', lane: 'student', type: 'student', col: 4, details: { procedure: '段階テスト', tools: 'テストフォーム', owner: '受講生', duration: '45分', sopLink: '' }},
+        { id: 'H-08', label: 'ハッテン修了', lane: 'system', type: 'branch', col: 5, details: { procedure: '完了確認', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'H-09', label: '卒業証明・次ステップ案内', lane: 'cs', type: 'ops', col: 6, details: { procedure: '修了処理', tools: '受講生管理スプシ', owner: 'CS', duration: '30分', sopLink: '' }}
+      ],
+      edges: [
+        { id: 'he1', from: 'H-02', to: 'H-01' }, { id: 'he2', from: 'H-01', to: 'H-03' },
+        { id: 'he3', from: 'H-03', to: 'H-04' }, { id: 'he4', from: 'H-03', to: 'H-06', trigger: true },
+        { id: 'he5', from: 'H-04', to: 'H-05' }, { id: 'he6', from: 'H-05', to: 'H-07' },
+        { id: 'he7', from: 'H-07', to: 'H-08' }, { id: 'he8', from: 'H-08', to: 'H-09' }
+      ]
+    },
+    coaching: {
+      id: 'coaching', label: 'コーチング', phase: 'Phase 3：コーチング セッションフロー',
+      nodes: [
+        { id: 'K-01', label: '初回セッション実施', lane: 'coach', type: 'coach', col: 0, details: { procedure: 'ゴール設定', tools: 'Zoom', owner: 'コーチ', duration: '60分', sopLink: '' }},
+        { id: 'K-02', label: 'セッション記録入力', lane: 'coach', type: 'coach', col: 1, details: { procedure: '記録入力', tools: 'セッション実施記録', owner: 'コーチ', duration: '10分', sopLink: '' }},
+        { id: 'K-03', label: '日常学習継続', lane: 'student', type: 'student', col: 2, details: { procedure: '課題実践', tools: 'OCU', owner: '受講生', duration: '随時', sopLink: '' }},
+        { id: 'K-04', label: '定期セッション', lane: 'coach', type: 'coach', col: 3, details: { procedure: '進捗確認', tools: 'Zoom', owner: 'コーチ', duration: '60分/回', sopLink: '' }},
+        { id: 'K-05', label: 'セッション実施記録', lane: 'system', type: 'system', col: 1, row: 1, details: { procedure: '自動集計', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'K-06', label: '請求書照合準備', lane: 'system', type: 'system', col: 4, row: 1, details: { procedure: '回数集計', tools: '講師管理シート', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'K-07', label: '契約期間終了判定', lane: 'system', type: 'branch', col: 5, details: { procedure: '満了確認', tools: '契約管理スプシ', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'K-08', label: '卒業面談', lane: 'coach', type: 'coach', col: 6, details: { procedure: '振り返り', tools: 'Zoom', owner: 'コーチ', duration: '60分', sopLink: '' }},
+        { id: 'K-09', label: '卒業処理', lane: 'cs', type: 'ops', col: 7, details: { procedure: 'ステータス更新', tools: '受講生管理スプシ', owner: 'CS', duration: '20分', sopLink: '' }},
+        { id: 'K-10', label: '継続意向ヒアリング', lane: 'sales', type: 'ops', col: 6, row: 1, details: { procedure: '延長・ダウンセル確認', tools: '個別相談', owner: 'セールス', duration: '30分', sopLink: '' }}
+      ],
+      edges: [
+        { id: 'ke1', from: 'K-01', to: 'K-02' }, { id: 'ke2', from: 'K-02', to: 'K-05', trigger: true },
+        { id: 'ke3', from: 'K-02', to: 'K-03' }, { id: 'ke4', from: 'K-03', to: 'K-04' },
+        { id: 'ke5', from: 'K-04', to: 'K-06', trigger: true }, { id: 'ke6', from: 'K-04', to: 'K-03' },
+        { id: 'ke7', from: 'K-07', to: 'K-08' }, { id: 'ke8', from: 'K-08', to: 'K-09' },
+        { id: 'ke9', from: 'K-07', to: 'K-10', trigger: true }
+      ]
+    },
+    extension: {
+      id: 'extension', label: '延長', phase: 'Phase 4：コーチング延長フロー',
+      nodes: [
+        { id: 'E-01', label: '延長オファー', lane: 'sales', type: 'ops', col: 0, details: { procedure: '延長提案', tools: '個別相談', owner: 'セールス', duration: '30分', sopLink: '' }},
+        { id: 'E-02', label: '延長意向確認', lane: 'student', type: 'branch', col: 1, details: { procedure: '延長可否決定', tools: '—', owner: '受講生', duration: '—', sopLink: '' }},
+        { id: 'E-03', label: '延長契約締結', lane: 'sales', type: 'ops', col: 2, details: { procedure: '契約更新', tools: '契約管理スプシ', owner: 'セールス', duration: '20分', sopLink: '' }},
+        { id: 'E-04', label: '契約情報更新', lane: 'system', type: 'system', col: 3, details: { procedure: '残数更新', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'E-05', label: '延長セッション再開', lane: 'coach', type: 'coach', col: 4, details: { procedure: '新ゴール設定', tools: 'Zoom', owner: 'コーチ', duration: '60分', sopLink: '' }},
+        { id: 'E-06', label: '延長しない', lane: 'cs', type: 'ops', col: 2, row: 1, details: { procedure: 'ダウンセルへ', tools: '—', owner: 'CS', duration: '10分', sopLink: '' }}
+      ],
+      edges: [
+        { id: 'ee1', from: 'E-01', to: 'E-02' },
+        { id: 'ee2', from: 'E-02', to: 'E-03', label: '延長する' },
+        { id: 'ee3', from: 'E-03', to: 'E-04' }, { id: 'ee4', from: 'E-04', to: 'E-05' },
+        { id: 'ee5', from: 'E-02', to: 'E-06', label: '延長しない' }
+      ]
+    },
+    downsell: {
+      id: 'downsell', label: 'ハッテンダウンセル', phase: 'Phase 5：ハッテンダウンセルフロー',
+      nodes: [
+        { id: 'D-01', label: 'ダウンセル提案', lane: 'sales', type: 'ops', col: 0, details: { procedure: 'ハッテン案内', tools: '提案資料', owner: 'セールス', duration: '30分', sopLink: '' }},
+        { id: 'D-02', label: '意向確認', lane: 'student', type: 'branch', col: 1, details: { procedure: '受講可否', tools: '—', owner: '受講生', duration: '—', sopLink: '' }},
+        { id: 'D-03', label: 'ハッテン契約', lane: 'sales', type: 'ops', col: 2, details: { procedure: 'プラン変更', tools: '契約管理スプシ', owner: 'セールス', duration: '20分', sopLink: '' }},
+        { id: 'D-04', label: '商品切替処理', lane: 'system', type: 'system', col: 3, details: { procedure: 'ステータス変更', tools: 'GAS', owner: 'システム', duration: '自動', sopLink: '' }},
+        { id: 'D-05', label: 'ハッテンオンボーディング', lane: 'cs', type: 'ops', col: 4, details: { procedure: '教材案内', tools: '講義スケジュール管理スプシ', owner: 'CS', duration: '30分', sopLink: '' }},
+        { id: 'D-06', label: 'ハッテンフローへ合流', lane: 'student', type: 'student', col: 5, details: { procedure: '学習開始', tools: 'ハッテン教材', owner: '受講生', duration: '—', sopLink: '' }},
+        { id: 'D-07', label: '完全卒業', lane: 'cs', type: 'ops', col: 2, row: 1, details: { procedure: 'サポート終了', tools: '受講生管理スプシ', owner: 'CS', duration: '20分', sopLink: '' }}
+      ],
+      edges: [
+        { id: 'de1', from: 'D-01', to: 'D-02' },
+        { id: 'de2', from: 'D-02', to: 'D-03', label: '受講する' },
+        { id: 'de3', from: 'D-03', to: 'D-04' }, { id: 'de4', from: 'D-04', to: 'D-05' },
+        { id: 'de5', from: 'D-05', to: 'D-06' },
+        { id: 'de6', from: 'D-02', to: 'D-07', label: '受講しない' }
+      ]
+    }
+  }
+};
+
+let data = loadData();
+let currentFlowId = 'common';
+let editMode = false;
+let selectedNodeId = null;
+let selectedEdgeId = null;
+let edgeAddMode = null;
+let dragState = null;
+let endpointDrag = null;
+let snapHighlight = null;
+let showEdgeListPanel = false;
+let nextNodeNum = 1;
+
+const $ = id => document.getElementById(id);
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      migrateAll(parsed);
+      return parsed;
+    }
+    const v1 = localStorage.getItem('mainichi-chinese-flow-v1');
+    if (v1) {
+      const parsed = JSON.parse(v1);
+      migrateAll(parsed);
+      return parsed;
+    }
+  } catch (e) { /* ignore */ }
+  const d = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  migrateAll(d);
+  return d;
+}
+
+function migrateAll(d) {
+  if (!d.flows) return;
+  Object.values(d.flows).forEach(migrateFlow);
+}
+
+function migrateFlow(flow) {
+  const gap = 24;
+  flow.nodes.forEach(node => {
+    if (node.x == null || node.y == null) {
+      const li = LANES.findIndex(l => l.id === node.lane);
+      const laneIdx = li >= 0 ? li : 0;
+      const col = node.col ?? 0;
+      const row = node.row ?? 0;
+      node.x = 20 + col * (NODE_W_DEF + gap);
+      node.y = laneIdx * LANE_H + 20 + row * 68;
+    }
+    if (!node.w) node.w = NODE_W_DEF;
+    if (!node.h) node.h = NODE_H_DEF;
+    if (!node.details) node.details = { procedure:'', tools:'', owner:'', duration:'', sopLink:'' };
+  });
+  flow.edges.forEach((e, i) => {
+    if (!e.id) e.id = 'edge-' + i + '-' + e.from + '-' + e.to;
+    normalizeEdge(e);
+  });
+}
+
+function normalizeEdge(edge) {
+  if (!edge.edgeType) edge.edgeType = edge.trigger ? 'trigger' : 'normal';
+  if (edge.trigger && edge.edgeType === 'trigger') { /* ok */ }
+}
+
+function saveData() {
+  data.meta.updatedAt = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function updateEditUI() {
+  $('btnEdit').textContent = editMode ? '編集モード ON' : '編集モード OFF';
+  $('btnEdit').classList.toggle('active', editMode);
+  $('editBadge').classList.toggle('on', editMode);
+}
+
+function ensureEditMode(quiet) {
+  if (editMode) return;
+  editMode = true;
+  updateEditUI();
+  if (!quiet) showToast('編集モードをONにしました');
+}
+
+function selectEdge(edgeId, opts = {}) {
+  selectedEdgeId = edgeId;
+  selectedNodeId = null;
+  showEdgeListPanel = false;
+  if (opts.enableEdit) ensureEditMode(opts.quiet);
+  render();
+}
+
+function getFlow() { return data.flows[currentFlowId]; }
+function getNode(flow, id) { return flow.nodes.find(n => n.id === id); }
+function getEdge(flow, id) { return flow.edges.find(e => e.id === id); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
+
+function nodeSize(node) {
+  return { w: node.w || NODE_W_DEF, h: node.h || NODE_H_DEF };
+}
+
+function getAnchor(node, side) {
+  const { w, h } = nodeSize(node);
+  switch (side) {
+    case 'right': return { x: node.x + w, y: node.y + h / 2 };
+    case 'left': return { x: node.x, y: node.y + h / 2 };
+    case 'top': return { x: node.x + w / 2, y: node.y };
+    case 'bottom': return { x: node.x + w / 2, y: node.y + h };
+    default: return { x: node.x + w / 2, y: node.y + h / 2 };
+  }
+}
+
+function pickSides(fromNode, toNode) {
+  if (fromNode && toNode) {
+    const fw = nodeSize(fromNode).w, fh = nodeSize(fromNode).h;
+    const tw = nodeSize(toNode).w, th = nodeSize(toNode).h;
+    const fcx = fromNode.x + fw / 2, fcy = fromNode.y + fh / 2;
+    const tcx = toNode.x + tw / 2, tcy = toNode.y + th / 2;
+    const dx = tcx - fcx, dy = tcy - fcy;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      return dx >= 0 ? ['right', 'left'] : ['left', 'right'];
+    }
+    return dy >= 0 ? ['bottom', 'top'] : ['top', 'bottom'];
+  }
+  return ['right', 'left'];
+}
+
+function getSides(edge, fromNode, toNode) {
+  const auto = pickSides(fromNode, toNode);
+  return [edge.fromSide || auto[0], edge.toSide || auto[1]];
+}
+
+function closestSideOnNode(node, x, y) {
+  let best = 'right', bestD = Infinity;
+  ['right', 'left', 'top', 'bottom'].forEach(side => {
+    const pt = getAnchor(node, side);
+    const d = Math.hypot(pt.x - x, pt.y - y);
+    if (d < bestD) { bestD = d; best = side; }
+  });
+  return best;
+}
+
+function findPortAt(x, y, flow, excludeNodeId) {
+  let best = null, bestDist = SNAP_DIST;
+  flow.nodes.forEach(node => {
+    if (excludeNodeId && node.id === excludeNodeId) return;
+    ['right', 'left', 'top', 'bottom'].forEach(side => {
+      const pt = getAnchor(node, side);
+      const d = Math.hypot(pt.x - x, pt.y - y);
+      if (d < bestDist) {
+        bestDist = d;
+        best = { nodeId: node.id, side };
+      }
+    });
+  });
+  return best;
+}
+
+function getEdgeTypeStyle(edge) {
+  return EDGE_TYPES[edge.edgeType] || EDGE_TYPES.normal;
+}
+
+function applyEdgeVisual(path, edge, isSelected) {
+  const t = getEdgeTypeStyle(edge);
+  const color = isSelected ? '#1a73e8' : t.color;
+  const width = isSelected ? Math.max(t.width, 2.5) : t.width;
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width', width);
+  if (t.dash) path.setAttribute('stroke-dasharray', t.dash);
+  else path.removeAttribute('stroke-dasharray');
+  if (isSelected && t.marker) path.setAttribute('marker-end', 'url(#arrowhead-primary)');
+  else if (t.marker) path.setAttribute('marker-end', `url(#${t.marker})`);
+  else path.removeAttribute('marker-end');
+  if (!isSelected && t.markerStart) path.setAttribute('marker-start', `url(#${t.markerStart})`);
+  else path.removeAttribute('marker-start');
+}
+
+function edgeTypeLabel(edge) {
+  return (EDGE_TYPES[edge.edgeType] || EDGE_TYPES.normal).label;
+}
+
+function canvasPointFromEvent(ev) {
+  const board = $('board');
+  const rect = board.getBoundingClientRect();
+  const scrollEl = $('canvasWrap');
+  return {
+    x: ev.clientX - rect.left + scrollEl.scrollLeft,
+    y: ev.clientY - rect.top + scrollEl.scrollTop
+  };
+}
+
+function defaultBend(fromPt, toPt, edge) {
+  if (edge.bend) return edge.bend;
+  const mx = (fromPt.x + toPt.x) / 2;
+  const my = (fromPt.y + toPt.y) / 2;
+  const dx = Math.abs(toPt.x - fromPt.x);
+  const dy = Math.abs(toPt.y - fromPt.y);
+  if (dx > dy * 1.5) return { x: mx, y: (fromPt.y + toPt.y) / 2 };
+  if (dy > dx * 1.5) return { x: (fromPt.x + toPt.x) / 2, y: my };
+  return { x: mx, y: my };
+}
+
+function buildPath(fromPt, toPt, bend) {
+  const dx = toPt.x - fromPt.x;
+  const dy = toPt.y - fromPt.y;
+  if (Math.abs(dx) > Math.abs(dy) * 2) {
+    const midX = bend ? bend.x : (fromPt.x + toPt.x) / 2;
+    return `M ${fromPt.x} ${fromPt.y} L ${midX} ${fromPt.y} L ${midX} ${toPt.y} L ${toPt.x} ${toPt.y}`;
+  }
+  if (Math.abs(dy) > Math.abs(dx) * 2) {
+    const midY = bend ? bend.y : (fromPt.y + toPt.y) / 2;
+    return `M ${fromPt.x} ${fromPt.y} L ${fromPt.x} ${midY} L ${toPt.x} ${midY} L ${toPt.x} ${toPt.y}`;
+  }
+  if (bend) {
+    return `M ${fromPt.x} ${fromPt.y} Q ${bend.x} ${bend.y} ${toPt.x} ${toPt.y}`;
+  }
+  const cx = (fromPt.x + toPt.x) / 2;
+  return `M ${fromPt.x} ${fromPt.y} C ${cx} ${fromPt.y}, ${cx} ${toPt.y}, ${toPt.x} ${toPt.y}`;
+}
+
+function getEdgeGeometry(edge, flow) {
+  const fromNode = getNode(flow, edge.from);
+  const toNode = getNode(flow, edge.to);
+  if (!fromNode || !toNode) return null;
+  const sides = getSides(edge, fromNode, toNode);
+  let fromPt = getAnchor(fromNode, sides[0]);
+  let toPt = getAnchor(toNode, sides[1]);
+
+  if (endpointDrag && endpointDrag.edgeId === edge.id) {
+    const pt = { x: endpointDrag.x, y: endpointDrag.y };
+    if (endpointDrag.end === 'from') fromPt = pt;
+    else toPt = pt;
+  }
+
+  const bend = defaultBend(fromPt, toPt, edge);
+  const path = buildPath(fromPt, toPt, edge.bend || bend);
+  return { fromPt, toPt, bend: edge.bend || bend, path, fromSide: sides[0], toSide: sides[1] };
+}
+
+// ─── Render ───
+function render() {
+  renderTabs();
+  renderLaneLabels();
+  renderBoard();
+  renderPanel();
+}
+
+function renderTabs() {
+  const tabs = $('flowTabs');
+  tabs.innerHTML = '';
+  Object.values(data.flows).forEach(flow => {
+    const btn = document.createElement('button');
+    btn.className = 'flow-tab' + (flow.id === currentFlowId ? ' active' : '');
+    btn.textContent = flow.label;
+    btn.onclick = () => {
+      currentFlowId = flow.id;
+      selectedNodeId = null;
+      selectedEdgeId = null;
+      edgeAddMode = null;
+      showEdgeListPanel = false;
+      render();
+    };
+    tabs.appendChild(btn);
+  });
+}
+
+function renderLaneLabels() {
+  const el = $('laneLabels');
+  el.innerHTML = LANES.map(l =>
+    `<div class="lane-label-fixed ${l.id}">${l.label}</div>`
+  ).join('');
+}
+
+function renderBoard() {
+  const flow = getFlow();
+  $('phaseHeader').textContent = flow.phase;
+
+  $('laneStripes').innerHTML = LANES.map(l =>
+    `<div class="lane-stripe ${l.id}"></div>`
+  ).join('');
+
+  const maxX = Math.max(900, ...flow.nodes.map(n => n.x + (n.w || NODE_W_DEF) + 80));
+  const maxY = Math.max(LANE_H * 5, ...flow.nodes.map(n => n.y + (n.h || NODE_H_DEF) + 80));
+  const board = $('board');
+  board.style.width = maxX + 'px';
+  board.style.height = maxY + 'px';
+
+  renderNodes(flow);
+  renderEdges(flow);
+}
+
+function renderNodes(flow) {
+  const layer = $('nodesLayer');
+  layer.innerHTML = '';
+
+  flow.nodes.forEach(node => {
+    const { w, h } = nodeSize(node);
+    const el = document.createElement('div');
+    const isSelected = selectedNodeId === node.id;
+    const isEdgeFrom = edgeAddMode?.from === node.id;
+    const isSnapTarget = snapHighlight?.nodeId === node.id;
+    el.className = `node ${node.type}${editMode ? ' editable' : ''}${isSelected ? ' selected' : ''}${isEdgeFrom ? ' edge-from' : ''}${isSnapTarget ? ' snap-target' : ''}`;
+    el.dataset.id = node.id;
+    el.style.left = node.x + 'px';
+    el.style.top = node.y + 'px';
+    el.style.width = w + 'px';
+    el.style.minHeight = h + 'px';
+
+    el.innerHTML = `
+      <div class="node-id">${esc(node.id)}</div>
+      <div class="node-label">${esc(node.label)}</div>
+      ${editMode ? `
+        <div class="port right ${snapHighlight?.nodeId===node.id&&snapHighlight?.side==='right'?'snap-highlight':''}" data-side="right" title="出発/着地"></div>
+        <div class="port left ${snapHighlight?.nodeId===node.id&&snapHighlight?.side==='left'?'snap-highlight':''}" data-side="left"></div>
+        <div class="port top ${snapHighlight?.nodeId===node.id&&snapHighlight?.side==='top'?'snap-highlight':''}" data-side="top"></div>
+        <div class="port bottom ${snapHighlight?.nodeId===node.id&&snapHighlight?.side==='bottom'?'snap-highlight':''}" data-side="bottom"></div>
+        <div class="resize-handle" title="サイズ変更"></div>
+      ` : ''}`;
+
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      if (e.target.classList.contains('port')) {
+        if (!editMode) return;
+        if (edgeAddMode?.step === 2) { completeEdgeAddToPort(node.id, e.target.dataset.side); return; }
+        startEdgeFromPort(node.id, e.target.dataset.side);
+        return;
+      }
+      if (edgeAddMode) { completeEdgeAdd(node.id); return; }
+      selectedNodeId = node.id;
+      selectedEdgeId = null;
+      render();
+    });
+
+    const labelEl = el.querySelector('.node-label');
+    labelEl.addEventListener('dblclick', e => {
+      if (!editMode) return;
+      e.stopPropagation();
+      startInlineEdit(labelEl, node);
+    });
+
+    if (editMode) {
+      el.addEventListener('mousedown', e => {
+        if (e.target.classList.contains('resize-handle')) {
+          startResize(e, node.id);
+          return;
+        }
+        if (e.target.classList.contains('port') || e.target.isContentEditable) return;
+        startNodeDrag(e, node.id);
+      });
+    }
+
+    layer.appendChild(el);
+  });
+}
+
+function resizeEdgeSvgs() {
+  const w = $('board').style.width.replace('px', '');
+  const h = $('board').style.height.replace('px', '');
+  $('edgesSvg').setAttribute('width', w);
+  $('edgesSvg').setAttribute('height', h);
+  $('edgesHitSvg').setAttribute('width', w);
+  $('edgesHitSvg').setAttribute('height', h);
+}
+
+function bindEdgeSelect(el, edgeId) {
+  const onSelect = e => {
+    e.stopPropagation();
+    selectEdge(edgeId, { enableEdit: true, quiet: true });
+  };
+  el.addEventListener('click', onSelect);
+  el.addEventListener('dblclick', e => {
+    e.stopPropagation();
+    selectEdge(edgeId, { enableEdit: true });
+  });
+}
+
+function renderEdges(flow) {
+  const group = $('edgesGroup');
+  const hitGroup = $('edgesHitGroup');
+  const handles = $('handlesGroup');
+  group.innerHTML = '';
+  hitGroup.innerHTML = '';
+  handles.innerHTML = '';
+  resizeEdgeSvgs();
+
+  flow.edges.forEach(edge => {
+    const geo = getEdgeGeometry(edge, flow);
+    if (!geo) return;
+
+    const isSelected = selectedEdgeId === edge.id;
+    normalizeEdge(edge);
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', geo.path);
+    path.setAttribute('class', 'edge-path');
+    applyEdgeVisual(path, edge, isSelected);
+    group.appendChild(path);
+
+    if (edge.label) {
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', geo.bend.x);
+      text.setAttribute('y', geo.bend.y - 6);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('class', 'edge-label');
+      text.textContent = edge.label;
+      group.appendChild(text);
+    }
+
+    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    hit.setAttribute('d', geo.path);
+    hit.setAttribute('class', 'edge-hit' + (isSelected ? ' selected' : ''));
+    hit.dataset.id = edge.id;
+    bindEdgeSelect(hit, edge.id);
+    hitGroup.appendChild(hit);
+
+    if (edge.label) {
+      const labelHit = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const lw = Math.max(40, edge.label.length * 11);
+      labelHit.setAttribute('x', geo.bend.x - lw / 2);
+      labelHit.setAttribute('y', geo.bend.y - 18);
+      labelHit.setAttribute('width', lw);
+      labelHit.setAttribute('height', 16);
+      labelHit.setAttribute('class', 'edge-label-hit');
+      bindEdgeSelect(labelHit, edge.id);
+      hitGroup.appendChild(labelHit);
+    }
+
+    if (editMode && isSelected) {
+      const bend = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      bend.setAttribute('cx', geo.bend.x);
+      bend.setAttribute('cy', geo.bend.y);
+      bend.setAttribute('r', 7);
+      bend.setAttribute('class', 'bend-handle');
+      bend.title = '経路調整';
+      bend.addEventListener('mousedown', e => startBendDrag(e, edge.id));
+      handles.appendChild(bend);
+
+      const fromH = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      fromH.setAttribute('cx', geo.fromPt.x);
+      fromH.setAttribute('cy', geo.fromPt.y);
+      fromH.setAttribute('r', 8);
+      fromH.setAttribute('class', 'endpoint-handle from');
+      fromH.title = '出発地点（ドラッグで付け替え）';
+      fromH.addEventListener('mousedown', e => startEndpointDrag(e, edge.id, 'from'));
+      handles.appendChild(fromH);
+
+      const toH = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      toH.setAttribute('cx', geo.toPt.x);
+      toH.setAttribute('cy', geo.toPt.y);
+      toH.setAttribute('r', 8);
+      toH.setAttribute('class', 'endpoint-handle to');
+      toH.title = '着地地点（ドラッグで付け替え）';
+      toH.addEventListener('mousedown', e => startEndpointDrag(e, edge.id, 'to'));
+      handles.appendChild(toH);
+    }
+  });
+}
+
+function renderArrowsOnly() {
+  renderEdges(getFlow());
+}
+
+// ─── Inline edit ───
+function startInlineEdit(labelEl, node) {
+  labelEl.contentEditable = 'true';
+  labelEl.focus();
+  document.execCommand('selectAll', false, null);
+
+  const finish = () => {
+    labelEl.contentEditable = 'false';
+    const text = labelEl.textContent.trim() || '無題';
+    node.label = text;
+    labelEl.textContent = text;
+    saveData();
+    labelEl.removeEventListener('blur', finish);
+    labelEl.removeEventListener('keydown', onKey);
+    renderPanel();
+  };
+  const onKey = e => {
+    if (e.key === 'Enter') { e.preventDefault(); labelEl.blur(); }
+    if (e.key === 'Escape') { labelEl.textContent = node.label; labelEl.blur(); }
+  };
+  labelEl.addEventListener('blur', finish);
+  labelEl.addEventListener('keydown', onKey);
+}
+
+// ─── Drag node ───
+function startNodeDrag(e, nodeId) {
+  if (e.button !== 0) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const flow = getFlow();
+  const node = getNode(flow, nodeId);
+  const el = document.querySelector(`.node[data-id="${nodeId}"]`);
+  el.classList.add('dragging');
+
+  dragState = {
+    type: 'node',
+    nodeId,
+    startX: e.clientX,
+    startY: e.clientY,
+    origX: node.x,
+    origY: node.y
+  };
+
+  const onMove = ev => {
+    const scale = 1;
+    node.x = Math.max(0, dragState.origX + (ev.clientX - dragState.startX) / scale);
+    node.y = Math.max(0, dragState.origY + (ev.clientY - dragState.startY) / scale);
+    el.style.left = node.x + 'px';
+    el.style.top = node.y + 'px';
+    renderArrowsOnly();
+  };
+  const onUp = () => {
+    el.classList.remove('dragging');
+    dragState = null;
+    saveData();
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function startResize(e, nodeId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const flow = getFlow();
+  const node = getNode(flow, nodeId);
+  const el = document.querySelector(`.node[data-id="${nodeId}"]`);
+  const origW = node.w || NODE_W_DEF;
+  const origH = node.h || NODE_H_DEF;
+
+  dragState = { type: 'resize', nodeId, startX: e.clientX, startY: e.clientY, origW, origH };
+
+  const onMove = ev => {
+    node.w = Math.max(100, origW + (ev.clientX - dragState.startX));
+    node.h = Math.max(48, origH + (ev.clientY - dragState.startY));
+    el.style.width = node.w + 'px';
+    el.style.minHeight = node.h + 'px';
+    renderArrowsOnly();
+  };
+  const onUp = () => {
+    dragState = null;
+    saveData();
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function startBendDrag(e, edgeId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const flow = getFlow();
+  const edge = getEdge(flow, edgeId);
+  const geo = getEdgeGeometry(edge, flow);
+  if (!edge.bend) edge.bend = { ...geo.bend };
+
+  const onMove = ev => {
+    const pt = canvasPointFromEvent(ev);
+    edge.bend.x = pt.x;
+    edge.bend.y = pt.y;
+    renderArrowsOnly();
+  };
+  const onUp = () => {
+    saveData();
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function startEndpointDrag(e, edgeId, end) {
+  e.preventDefault();
+  e.stopPropagation();
+  const flow = getFlow();
+  const edge = getEdge(flow, edgeId);
+  const pt = canvasPointFromEvent(e);
+  endpointDrag = { edgeId, end, x: pt.x, y: pt.y };
+
+  const onMove = ev => {
+    const p = canvasPointFromEvent(ev);
+    endpointDrag.x = p.x;
+    endpointDrag.y = p.y;
+    const excludeNodeId = end === 'from' ? edge.to : edge.from;
+    snapHighlight = findPortAt(p.x, p.y, flow, excludeNodeId);
+    render();
+  };
+
+  const onUp = ev => {
+    const p = canvasPointFromEvent(ev);
+    const otherId = end === 'from' ? edge.to : edge.from;
+    const snap = findPortAt(p.x, p.y, flow, otherId);
+
+    if (snap) {
+      if (end === 'from') {
+        edge.from = snap.nodeId;
+        edge.fromSide = snap.side;
+      } else {
+        edge.to = snap.nodeId;
+        edge.toSide = snap.side;
+      }
+      delete edge.bend;
+      showToast(end === 'from' ? '出発地点を変更しました' : '着地地点を変更しました');
+    } else {
+      const nodeId = end === 'from' ? edge.from : edge.to;
+      const node = getNode(flow, nodeId);
+      if (node) {
+        const side = closestSideOnNode(node, p.x, p.y);
+        if (end === 'from') edge.fromSide = side;
+        else edge.toSide = side;
+        delete edge.bend;
+        showToast('接続面を変更しました');
+      }
+    }
+
+    endpointDrag = null;
+    snapHighlight = null;
+    saveData();
+    render();
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function renderAllEdgeListHtml(flow, activeId) {
+  if (!flow.edges.length) return '<div class="edge-list-item">矢印がありません</div>';
+  return flow.edges.map(e => {
+    normalizeEdge(e);
+    const fromN = getNode(flow, e.from);
+    const toN = getNode(flow, e.to);
+    const label = `${esc(fromN?.label || e.from)} → ${esc(toN?.label || e.to)}`;
+    const active = e.id === activeId ? ' active' : '';
+    return `<div class="edge-list-item${active}" data-eid="${e.id}">${label}<br><small style="color:var(--text-sub)">${esc(edgeTypeLabel(e))}${e.label ? ' · '+esc(e.label) : ''}</small></div>`;
+  }).join('');
+}
+
+function bindEdgeListItems(root) {
+  root.querySelectorAll('.edge-list-item[data-eid]').forEach(item => {
+    item.onclick = () => selectEdge(item.dataset.eid, { enableEdit: true });
+  });
+}
+
+// ─── Panel ───
+function renderPanel() {
+  const content = $('panelContent');
+  if (selectedEdgeId) { renderEdgePanel(content); return; }
+  if (selectedNodeId) { renderNodePanel(content); return; }
+  if (showEdgeListPanel) { renderEdgeListPanel(content); return; }
+
+  $('panelTitle').textContent = '詳細';
+  const flow = getFlow();
+  content.innerHTML = `
+    <div class="panel-empty">ボックスまたは矢印をクリック<br><br>
+      <small style="color:var(--text-sub)">このフロー: ボックス ${flow.nodes.length} / 矢印 ${flow.edges.length}</small>
+    </div>
+    ${flow.edges.length ? `
+    <div class="panel-section">
+      <label>このフローの矢印（クリックで編集）</label>
+      <div class="edge-list edge-list-all" id="quickEdgeList">${renderAllEdgeListHtml(flow, null)}</div>
+    </div>` : ''}`;
+  bindEdgeListItems(content);
+}
+
+function renderEdgeListPanel(content) {
+  const flow = getFlow();
+  $('panelTitle').textContent = '矢印一覧';
+  content.innerHTML = `
+    <div class="panel-hint-box">矢印をクリックすると編集パネルが開きます。編集モードが自動でONになります。</div>
+    <div class="panel-section">
+      <label>全 ${flow.edges.length} 件</label>
+      <div class="edge-list edge-list-all" id="allEdgeList">${renderAllEdgeListHtml(flow, selectedEdgeId)}</div>
+    </div>
+    <div class="panel-actions">
+      <button class="btn" id="btnCloseEdgeList">閉じる</button>
+      <button class="btn primary" id="btnAddEdgeFromList">＋ 矢印を追加</button>
+    </div>`;
+  bindEdgeListItems(content);
+  $('btnCloseEdgeList').onclick = () => { showEdgeListPanel = false; renderPanel(); };
+  $('btnAddEdgeFromList').onclick = () => {
+    ensureEditMode();
+    showEdgeListPanel = false;
+    startEdgeAdd();
+  };
+}
+
+function renderNodePanel(content) {
+  const flow = getFlow();
+  const node = getNode(flow, selectedNodeId);
+  if (!node) return;
+  const d = node.details || {};
+  $('panelTitle').textContent = node.id;
+
+  if (editMode) {
+    content.innerHTML = `
+      <div class="panel-section"><label>ID</label><input id="fId" value="${esc(node.id)}"></div>
+      <div class="panel-section"><label>ラベル（ボックス内の文言）</label><input id="fLabel" value="${esc(node.label)}"></div>
+      <div class="panel-section"><label>レーン（色の目安）</label>
+        <select id="fLane">${LANES.map(l => `<option value="${l.id}" ${l.id===node.lane?'selected':''}>${l.label}</option>`).join('')}</select>
+      </div>
+      <div class="panel-section"><label>種別（枠の色）</label>
+        <select id="fType">
+          <option value="student" ${node.type==='student'?'selected':''}>受講生（黄）</option>
+          <option value="ops" ${node.type==='ops'?'selected':''}>運営（紫）</option>
+          <option value="system" ${node.type==='system'?'selected':''}>システム（青）</option>
+          <option value="coach" ${node.type==='coach'?'selected':''}>コーチ（赤）</option>
+          <option value="branch" ${node.type==='branch'?'selected':''}>分岐（濃青）</option>
+        </select>
+      </div>
+      <div class="panel-section"><label>やること</label><textarea id="fProcedure">${esc(d.procedure||'')}</textarea></div>
+      <div class="panel-section"><label>使うツール</label><input id="fTools" value="${esc(d.tools||'')}"></div>
+      <div class="panel-section"><label>担当者</label><input id="fOwner" value="${esc(d.owner||'')}"></div>
+      <div class="panel-section"><label>所要時間</label><input id="fDuration" value="${esc(d.duration||'')}"></div>
+      <div class="panel-section"><label>SOPリンク</label><input id="fSop" value="${esc(d.sopLink||'')}" placeholder="https://"></div>
+      <div class="panel-section"><label>接続中の矢印</label>
+        <div class="edge-list" id="nodeEdgeList"></div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" id="btnSaveNode">保存</button>
+        <button class="btn" id="btnDupNode">複製</button>
+        <button class="btn danger" id="btnDeleteNode">削除</button>
+      </div>`;
+    $('btnSaveNode').onclick = () => saveNodeEdits(node);
+    $('btnDupNode').onclick = () => duplicateNode(node);
+    $('btnDeleteNode').onclick = () => deleteNode(node.id);
+    renderNodeEdgeList(node);
+  } else {
+    content.innerHTML = `
+      <div class="panel-section"><label>ラベル</label><div class="value" style="font-weight:700">${esc(node.label)}</div></div>
+      <div class="panel-section"><label>やること</label><div class="value">${esc(d.procedure||'（未設定）')}</div></div>
+      <div class="panel-section"><label>使うツール</label><div class="value">${esc(d.tools||'（未設定）')}</div></div>
+      <div class="panel-section"><label>担当者</label><div class="value">${esc(d.owner||'（未設定）')}</div></div>
+      <div class="panel-section"><label>所要時間</label><div class="value">${esc(d.duration||'（未設定）')}</div></div>
+      <div class="panel-section panel-links"><label>SOP</label>
+        ${d.sopLink ? `<a href="${esc(d.sopLink)}" target="_blank">${esc(d.sopLink)}</a>` : '<div class="value">（未設定）</div>'}
+      </div>`;
+  }
+}
+
+function renderNodeEdgeList(node) {
+  const flow = getFlow();
+  const list = $('nodeEdgeList');
+  if (!list) return;
+  const related = flow.edges.filter(e => e.from === node.id || e.to === node.id);
+  if (!related.length) { list.innerHTML = '<div class="edge-list-item">なし</div>'; return; }
+  list.innerHTML = related.map(e => {
+    normalizeEdge(e);
+    const arrow = e.from === node.id ? `→ ${e.to}` : `${e.from} →`;
+    return `<div class="edge-list-item" data-eid="${e.id}">${esc(arrow)} [${esc(edgeTypeLabel(e))}]${e.label ? ' '+esc(e.label) : ''}</div>`;
+  }).join('');
+  list.querySelectorAll('.edge-list-item').forEach(item => {
+    item.onclick = () => selectEdge(item.dataset.eid, { enableEdit: true });
+  });
+}
+
+function sidePickerHtml(prefix, current) {
+  const items = [
+    { v: '', l: '自動' }, { v: 'top', l: '上' }, { v: 'bottom', l: '下' },
+    { v: 'left', l: '左' }, { v: 'right', l: '右' }
+  ];
+  return `<div class="side-picker" id="${prefix}SidePicker">` +
+    items.map(it => `<button type="button" class="side-btn${(current||'')===it.v?' active':''}" data-side="${it.v}">${it.l}</button>`).join('') +
+    '</div>';
+}
+
+function bindSidePicker(id, onChange) {
+  const el = $(id);
+  if (!el) return;
+  el.querySelectorAll('.side-btn').forEach(btn => {
+    btn.onclick = () => {
+      el.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(btn.dataset.side);
+    };
+  });
+}
+
+function renderEdgePanel(content) {
+  const flow = getFlow();
+  const edge = getEdge(flow, selectedEdgeId);
+  if (!edge) return;
+  normalizeEdge(edge);
+  $('panelTitle').textContent = '矢印';
+
+  const fromNode = getNode(flow, edge.from);
+  const toNode = getNode(flow, edge.to);
+  const geo = getEdgeGeometry(edge, flow);
+
+  content.innerHTML = `
+    <div class="panel-section"><label>接続</label>
+      <div class="value" style="font-weight:600">${esc(edge.from)} → ${esc(edge.to)}</div>
+    </div>
+    ${editMode ? `
+      <div class="panel-section"><label>出発ボックス（起点）</label>
+        <select id="eFrom">${flow.nodes.map(n => `<option value="${n.id}" ${n.id===edge.from?'selected':''}>${esc(n.id)} ${esc(n.label)}</option>`).join('')}</select>
+      </div>
+      <div class="panel-section"><label>出発の接続面</label>
+        ${sidePickerHtml('eFrom', edge.fromSide)}
+        <div class="edge-type-preview">緑●をドラッグしても変更できます</div>
+      </div>
+      <div class="panel-section"><label>着地ボックス（終点）</label>
+        <select id="eTo">${flow.nodes.map(n => `<option value="${n.id}" ${n.id===edge.to?'selected':''}>${esc(n.id)} ${esc(n.label)}</option>`).join('')}</select>
+      </div>
+      <div class="panel-section"><label>着地の接続面</label>
+        ${sidePickerHtml('eTo', edge.toSide)}
+        <div class="edge-type-preview">橙●をドラッグしても変更できます</div>
+      </div>
+      <div class="panel-section"><label>矢印の種類</label>
+        <select id="eType">${Object.entries(EDGE_TYPES).map(([k,v]) =>
+          `<option value="${k}" ${edge.edgeType===k?'selected':''}>${v.label}</option>`).join('')}</select>
+      </div>
+      <div class="panel-section"><label>ラベル（矢印上の文字）</label><input id="eLabel" value="${esc(edge.label||'')}"></div>
+      <div class="panel-actions">
+        <button class="btn primary" id="btnSaveEdge">保存</button>
+        <button class="btn" id="btnSwapEdge">出発⇄着地 入れ替え</button>
+        <button class="btn" id="btnResetBend">経路を自動に戻す</button>
+        <button class="btn danger" id="btnDeleteEdge">削除</button>
+      </div>
+    ` : `
+      <div class="panel-hint-box">閲覧中です。「編集を開始」で出発・着地・種類を変更できます。</div>
+      <div class="panel-section"><label>出発</label><div class="value">${esc(fromNode?.label||edge.from)}${geo?`（${geo.fromSide}）`:''}</div></div>
+      <div class="panel-section"><label>着地</label><div class="value">${esc(toNode?.label||edge.to)}${geo?`（${geo.toSide}）`:''}</div></div>
+      <div class="panel-section"><label>種類</label><div class="value">${edgeTypeLabel(edge)}</div></div>
+      <div class="panel-section"><label>ラベル</label><div class="value">${esc(edge.label||'（なし）')}</div></div>
+      <div class="panel-actions">
+        <button class="btn primary" id="btnStartEdgeEdit">編集を開始</button>
+      </div>
+    `}`;
+
+  if (!editMode) {
+    const btn = $('btnStartEdgeEdit');
+    if (btn) btn.onclick = () => {
+      ensureEditMode();
+      render();
+    };
+  }
+
+  if (editMode) {
+    let fromSide = edge.fromSide || '';
+    let toSide = edge.toSide || '';
+    bindSidePicker('eFromSidePicker', v => { fromSide = v; });
+    bindSidePicker('eToSidePicker', v => { toSide = v; });
+
+    $('btnSaveEdge').onclick = () => {
+      const newFrom = $('eFrom').value;
+      const newTo = $('eTo').value;
+      if (newFrom === newTo) { showToast('出発と着地は別のボックスにしてください'); return; }
+      edge.from = newFrom;
+      edge.to = newTo;
+      edge.fromSide = fromSide || undefined;
+      edge.toSide = toSide || undefined;
+      edge.edgeType = $('eType').value;
+      edge.trigger = edge.edgeType === 'trigger';
+      edge.label = $('eLabel').value;
+      delete edge.bend;
+      saveData(); render(); showToast('矢印を保存しました');
+    };
+    $('btnSwapEdge').onclick = () => {
+      const tmp = edge.from;
+      edge.from = edge.to;
+      edge.to = tmp;
+      const tmpS = edge.fromSide;
+      edge.fromSide = edge.toSide;
+      edge.toSide = tmpS;
+      delete edge.bend;
+      saveData(); render(); showToast('出発と着地を入れ替えました');
+    };
+    $('btnResetBend').onclick = () => {
+      delete edge.bend;
+      edge.fromSide = undefined;
+      edge.toSide = undefined;
+      saveData(); render(); showToast('経路をリセットしました');
+    };
+    $('btnDeleteEdge').onclick = () => deleteEdge(edge.id);
+  }
+}
+
+function saveNodeEdits(oldNode) {
+  const flow = getFlow();
+  const newId = $('fId').value.trim();
+  if (!newId) { showToast('IDは必須です'); return; }
+  if (newId !== oldNode.id && flow.nodes.some(n => n.id === newId)) {
+    showToast('IDが重複しています'); return;
+  }
+  const idx = flow.nodes.indexOf(oldNode);
+  const updated = {
+    ...oldNode,
+    id: newId,
+    label: $('fLabel').value.trim() || '無題',
+    lane: $('fLane').value,
+    type: $('fType').value,
+    details: {
+      procedure: $('fProcedure').value,
+      tools: $('fTools').value,
+      owner: $('fOwner').value,
+      duration: $('fDuration').value,
+      sopLink: $('fSop').value
+    }
+  };
+  if (newId !== oldNode.id) {
+    flow.edges.forEach(e => {
+      if (e.from === oldNode.id) e.from = newId;
+      if (e.to === oldNode.id) e.to = newId;
+    });
+    selectedNodeId = newId;
+  }
+  flow.nodes[idx] = updated;
+  saveData(); render(); showToast('保存しました');
+}
+
+function duplicateNode(node) {
+  const flow = getFlow();
+  const newId = node.id + '-copy';
+  let id = newId;
+  let n = 1;
+  while (flow.nodes.some(x => x.id === id)) { id = newId + n++; }
+  flow.nodes.push({
+    ...JSON.parse(JSON.stringify(node)),
+    id,
+    x: node.x + 30,
+    y: node.y + 30,
+    label: node.label + '（コピー）'
+  });
+  selectedNodeId = id;
+  saveData(); render(); showToast('複製しました');
+}
+
+function deleteNode(id) {
+  if (!confirm(`ボックス ${id} を削除しますか？`)) return;
+  const flow = getFlow();
+  flow.nodes = flow.nodes.filter(n => n.id !== id);
+  flow.edges = flow.edges.filter(e => e.from !== id && e.to !== id);
+  selectedNodeId = null;
+  saveData(); render(); showToast('削除しました');
+}
+
+function deleteEdge(id) {
+  const flow = getFlow();
+  flow.edges = flow.edges.filter(e => e.id !== id);
+  selectedEdgeId = null;
+  saveData(); render(); showToast('矢印を削除しました');
+}
+
+// ─── Add node / edge ───
+function addNodeAt(x, y) {
+  const flow = getFlow();
+  const prefix = currentFlowId.slice(0, 1).toUpperCase();
+  let id = `N-${nextNodeNum++}`;
+  while (flow.nodes.some(n => n.id === id)) id = `N-${nextNodeNum++}`;
+
+  flow.nodes.push({
+    id, label: '新しいステップ', lane: 'student', type: 'student',
+    x: Math.max(20, x), y: Math.max(20, y),
+    w: NODE_W_DEF, h: NODE_H_DEF,
+    details: { procedure:'', tools:'', owner:'', duration:'', sopLink:'' }
+  });
+  selectedNodeId = id;
+  selectedEdgeId = null;
+  saveData(); render(); showToast('ボックスを追加しました');
+}
+
+function addNode() {
+  const board = $('board');
+  const scrollEl = $('canvasWrap');
+  const cx = scrollEl.scrollLeft + scrollEl.clientWidth / 2 - LABEL_W;
+  const cy = scrollEl.scrollTop + 180;
+  addNodeAt(cx, cy);
+}
+
+function startEdgeAdd() {
+  if (!editMode) { showToast('編集モードをONにしてください'); return; }
+  edgeAddMode = { step: 1 };
+  showToast('起点のボックスをクリック（または接続点●をクリック）');
+}
+
+function startEdgeFromPort(nodeId, side) {
+  edgeAddMode = { step: 2, from: nodeId, fromSide: side };
+  showToast('着地のボックス（または接続点●）をクリック');
+  render();
+}
+
+function completeEdgeAddToPort(nodeId, side) {
+  const flow = getFlow();
+  const from = edgeAddMode.from;
+  if (from === nodeId && edgeAddMode.fromSide === side) {
+    showToast('同じ接続点は選べません'); return;
+  }
+  const id = 'edge-' + Date.now();
+  flow.edges.push({
+    id, from, to: nodeId,
+    fromSide: edgeAddMode.fromSide,
+    toSide: side,
+    edgeType: 'normal',
+    trigger: false
+  });
+  edgeAddMode = null;
+  selectedEdgeId = id;
+  selectedNodeId = null;
+  saveData(); render();
+  showToast('矢印を追加しました');
+}
+
+function completeEdgeAdd(toId) {
+  const flow = getFlow();
+  if (edgeAddMode.step === 1) {
+    edgeAddMode.from = toId;
+    edgeAddMode.step = 2;
+    showToast('終点のボックスをクリック');
+    render();
+    return;
+  }
+  const from = edgeAddMode.from;
+  if (from === toId) { showToast('同じボックスは選べません'); edgeAddMode = null; render(); return; }
+  const id = 'edge-' + Date.now();
+  flow.edges.push({
+    id, from, to: toId,
+    fromSide: edgeAddMode.fromSide,
+    toSide: edgeAddMode.toSide,
+    edgeType: 'normal',
+    trigger: false
+  });
+  edgeAddMode = null;
+  selectedEdgeId = id;
+  selectedNodeId = null;
+  saveData(); render();
+  showToast('矢印を追加しました');
+}
+
+function toggleEdit() {
+  editMode = !editMode;
+  updateEditUI();
+  edgeAddMode = null;
+  render();
+}
+
+// ─── JSON ───
+function copyJson() {
+  navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+    .then(() => showToast('JSONをコピーしました'))
+    .catch(() => openJsonModal('JSON', JSON.stringify(data, null, 2), false));
+}
+
+function openJsonModal(title, text, editable) {
+  $('jsonModalTitle').textContent = title;
+  $('jsonTextarea').value = text;
+  $('jsonTextarea').readOnly = !editable;
+  $('jsonModalApply').style.display = editable ? '' : 'none';
+  $('jsonModal').classList.add('open');
+}
+
+function applyJson() {
+  try {
+    const parsed = JSON.parse($('jsonTextarea').value);
+    if (!parsed.flows) throw new Error('flows がありません');
+    migrateAll(parsed);
+    data = parsed;
+    saveData();
+    $('jsonModal').classList.remove('open');
+    selectedNodeId = null;
+    selectedEdgeId = null;
+    render();
+    showToast('JSONを適用しました');
+  } catch (e) { alert('JSONエラー: ' + e.message); }
+}
+
+// ─── Keyboard ───
+document.addEventListener('keydown', e => {
+  if (!editMode) return;
+  if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (selectedNodeId) { e.preventDefault(); deleteNode(selectedNodeId); }
+    else if (selectedEdgeId) { e.preventDefault(); deleteEdge(selectedEdgeId); }
+  }
+});
+
+// ─── Canvas dblclick ───
+$('board').addEventListener('dblclick', e => {
+  if (!editMode) return;
+  if (e.target.closest('.node')) return;
+  const rect = $('board').getBoundingClientRect();
+  const scrollEl = $('canvasWrap');
+  const x = e.clientX - rect.left + scrollEl.scrollLeft;
+  const y = e.clientY - rect.top + scrollEl.scrollTop;
+  addNodeAt(x - NODE_W_DEF / 2, y - NODE_H_DEF / 2);
+});
+
+$('canvasWrap').addEventListener('click', e => {
+  if (e.target.closest('.node') || e.target.closest('.edge-hit') || e.target.closest('.edge-label-hit') || e.target.closest('.bend-handle') || e.target.closest('.endpoint-handle')) return;
+  if (!edgeAddMode) {
+    selectedNodeId = null;
+    selectedEdgeId = null;
+    render();
+  }
+});
+
+// ─── Init ───
+$('btnEdit').onclick = toggleEdit;
+$('btnAddNode').onclick = () => { if (!editMode) { showToast('編集モードをONに'); return; } addNode(); };
+$('btnAddEdge').onclick = startEdgeAdd;
+$('btnEdgeList').onclick = () => {
+  selectedNodeId = null;
+  selectedEdgeId = null;
+  showEdgeListPanel = true;
+  render();
+};
+$('btnCopyJson').onclick = copyJson;
+$('btnSaveJson').onclick = () => { saveData(); showToast('保存しました'); };
+$('btnImportJson').onclick = () => openJsonModal('JSON読込', '', true);
+$('btnPrint').onclick = () => window.print();
+$('btnReset').onclick = () => {
+  if (!confirm('初期データに戻しますか？')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem('mainichi-chinese-flow-v1');
+  data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  migrateAll(data);
+  selectedNodeId = null;
+  selectedEdgeId = null;
+  render();
+  showToast('初期データに戻しました');
+};
+$('panelClose').onclick = () => {
+  selectedNodeId = null;
+  selectedEdgeId = null;
+  showEdgeListPanel = false;
+  render();
+};
+$('jsonModalCancel').onclick = () => $('jsonModal').classList.remove('open');
+$('jsonModalApply').onclick = applyJson;
+
+render();
+</script>
+</body>
+</html>
