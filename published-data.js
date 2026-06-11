@@ -1,0 +1,1808 @@
+window.PUBLISHED_DATA={
+  "meta": {
+    "title": "毎日中国語 全体フロー",
+    "version": 1,
+    "updatedAt": "2026-06-09T11:07:20.281Z",
+    "publishedBy": "manual-export"
+  },
+  "flows": {
+    "common": {
+      "id": "common",
+      "label": "成約後共通",
+      "phase": "Phase 0：成約後オンボーディング",
+      "nodes": [
+        {
+          "id": "C-01",
+          "label": "成約完了",
+          "lane": "student",
+          "type": "student",
+          "col": 0,
+          "details": {
+            "procedure": "契約書締結・決済完了を確認",
+            "tools": "契約管理スプシ",
+            "owner": "セールス",
+            "duration": "—",
+            "sopLink": ""
+          },
+          "x": 3,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-02",
+          "label": "LINE登録",
+          "lane": "student",
+          "type": "student",
+          "col": 1,
+          "details": {
+            "procedure": "案内URLから公式LINEを友だち追加",
+            "tools": "LINE",
+            "owner": "受講生",
+            "duration": "5分",
+            "sopLink": ""
+          },
+          "x": 166,
+          "y": 7,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-03",
+          "label": "初回メッセージ受信",
+          "lane": "student",
+          "type": "student",
+          "col": 2,
+          "details": {
+            "procedure": "ウェルカムメッセージ・次のアクションを確認",
+            "tools": "LINE",
+            "owner": "受講生",
+            "duration": "5分",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-04",
+          "label": "はじめにページ確認",
+          "lane": "student",
+          "type": "student",
+          "col": 3,
+          "details": {
+            "procedure": "学習の進め方・ルールを読む",
+            "tools": "はじめにページ",
+            "owner": "受講生",
+            "duration": "15分",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-05",
+          "label": "オンボーディング動画視聴",
+          "lane": "student",
+          "type": "student",
+          "col": 4,
+          "details": {
+            "procedure": "サービス全体像の動画を視聴",
+            "tools": "動画配信",
+            "owner": "受講生",
+            "duration": "20分",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-06",
+          "label": "初回予約",
+          "lane": "student",
+          "type": "student",
+          "col": 5,
+          "details": {
+            "procedure": "カレンダーから初回セッションを予約",
+            "tools": "予約システム",
+            "owner": "受講生",
+            "duration": "5分",
+            "sopLink": ""
+          },
+          "x": 860,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-07",
+          "label": "事前ヒアリング回答",
+          "lane": "student",
+          "type": "student",
+          "col": 6,
+          "details": {
+            "procedure": "フォームに学習目的・状況を入力",
+            "tools": "Googleフォーム",
+            "owner": "受講生",
+            "duration": "10分",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-09",
+          "label": "個別相談実施",
+          "lane": "sales",
+          "type": "ops",
+          "col": 0,
+          "details": {
+            "procedure": "ニーズヒアリング・提案・クロージング",
+            "tools": "Zoom",
+            "owner": "セールス",
+            "duration": "60分",
+            "sopLink": ""
+          },
+          "x": 0,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-10",
+          "label": "入力シート記入",
+          "lane": "sales",
+          "type": "ops",
+          "col": 1,
+          "details": {
+            "procedure": "成約情報を入力シートに転記",
+            "tools": "成約入力シート",
+            "owner": "セールス",
+            "duration": "10分",
+            "sopLink": ""
+          },
+          "x": 172,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-11",
+          "label": "契約ステータス更新",
+          "lane": "sales",
+          "type": "ops",
+          "col": 2,
+          "details": {
+            "procedure": "ステータスを「成約」に変更",
+            "tools": "契約管理スプシ",
+            "owner": "セールス",
+            "duration": "3分",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-12",
+          "label": "GASトリガー発火",
+          "lane": "system",
+          "type": "system",
+          "col": 3,
+          "details": {
+            "procedure": "成約検知で自動処理開始",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-13",
+          "label": "情報抽出",
+          "lane": "system",
+          "type": "system",
+          "col": 4,
+          "details": {
+            "procedure": "受講生情報をマスタから取得",
+            "tools": "GAS・マスタスプシ",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-14",
+          "label": "受講生シート転記",
+          "lane": "system",
+          "type": "system",
+          "col": 5,
+          "details": {
+            "procedure": "各管理シートへ自動転記",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 860,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-15",
+          "label": "Chatwork通知",
+          "lane": "system",
+          "type": "system",
+          "col": 6,
+          "details": {
+            "procedure": "担当コーチ・CSへ新規成約を通知",
+            "tools": "Chatwork API",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-16",
+          "label": "予約ログ記録",
+          "lane": "system",
+          "type": "system",
+          "col": 5,
+          "row": 1,
+          "details": {
+            "procedure": "予約情報をカレンダー・スプシに記録",
+            "tools": "GAS・カレンダー",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 860,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-17",
+          "label": "ヒアリング照合",
+          "lane": "system",
+          "type": "system",
+          "col": 6,
+          "row": 1,
+          "details": {
+            "procedure": "フォーム回答をマスタと照合",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-18",
+          "label": "初回予約完了通知",
+          "lane": "system",
+          "type": "system",
+          "col": 7,
+          "details": {
+            "procedure": "Chatworkへ初回予約完了を通知",
+            "tools": "Chatwork",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 1204,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-20",
+          "label": "オンボーディング確認",
+          "lane": "cs",
+          "type": "ops",
+          "col": 4,
+          "details": {
+            "procedure": "受講生の初期対応状況をモニタリング",
+            "tools": "受講生管理スプシ",
+            "owner": "CS",
+            "duration": "随時",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-21",
+          "label": "通知受信",
+          "lane": "coach",
+          "type": "coach",
+          "col": 6,
+          "details": {
+            "procedure": "Chatworkで新規担当通知を確認",
+            "tools": "Chatwork",
+            "owner": "コーチ",
+            "duration": "5分",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-22",
+          "label": "担当情報確認",
+          "lane": "coach",
+          "type": "coach",
+          "col": 7,
+          "details": {
+            "procedure": "受講生プロフィール・ヒアリングを確認",
+            "tools": "受講生シート",
+            "owner": "コーチ",
+            "duration": "15分",
+            "sopLink": ""
+          },
+          "x": 1204,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "C-28",
+          "label": "LINEグループ作成",
+          "lane": "coach",
+          "type": "coach",
+          "col": 8,
+          "details": {
+            "procedure": "受講生・コーチ・CSのグループ作成・リンク共有",
+            "tools": "LINE・Chatwork",
+            "owner": "コーチ",
+            "duration": "10分",
+            "sopLink": ""
+          },
+          "x": 1376,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        }
+      ],
+      "edges": [
+        {
+          "from": "C-01",
+          "to": "C-02",
+          "id": "edge-0-C-01-C-02",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-02",
+          "to": "C-03",
+          "id": "edge-1-C-02-C-03",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-03",
+          "to": "C-04",
+          "id": "edge-2-C-03-C-04",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-04",
+          "to": "C-05",
+          "id": "edge-3-C-04-C-05",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-05",
+          "to": "C-06",
+          "id": "edge-4-C-05-C-06",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-06",
+          "to": "C-07",
+          "id": "edge-5-C-06-C-07",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-09",
+          "to": "C-10",
+          "id": "edge-6-C-09-C-10",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-10",
+          "to": "C-11",
+          "id": "edge-7-C-10-C-11",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-11",
+          "to": "C-12",
+          "trigger": true,
+          "id": "edge-8-C-11-C-12",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "C-12",
+          "to": "C-13",
+          "id": "edge-9-C-12-C-13",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-13",
+          "to": "C-14",
+          "id": "edge-10-C-13-C-14",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-14",
+          "to": "C-15",
+          "id": "edge-11-C-14-C-15",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-15",
+          "to": "C-21",
+          "trigger": true,
+          "id": "edge-12-C-15-C-21",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "C-21",
+          "to": "C-22",
+          "id": "edge-13-C-21-C-22",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-06",
+          "to": "C-16",
+          "trigger": true,
+          "id": "edge-14-C-06-C-16",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "C-07",
+          "to": "C-17",
+          "trigger": true,
+          "id": "edge-15-C-07-C-17",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "C-17",
+          "to": "C-18",
+          "id": "edge-16-C-17-C-18",
+          "edgeType": "normal"
+        },
+        {
+          "from": "C-18",
+          "to": "C-28",
+          "trigger": true,
+          "id": "edge-17-C-18-C-28",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "C-14",
+          "to": "C-20",
+          "trigger": true,
+          "id": "edge-18-C-14-C-20",
+          "edgeType": "trigger"
+        }
+      ]
+    },
+    "ocu": {
+      "id": "ocu",
+      "label": "OCU",
+      "phase": "Phase 1：OCU 学習フロー",
+      "nodes": [
+        {
+          "id": "O-01",
+          "label": "OCUアカウント発行",
+          "lane": "cs",
+          "type": "ops",
+          "col": 0,
+          "details": {
+            "procedure": "受講生にOCUログイン情報を送付",
+            "tools": "OCU管理画面",
+            "owner": "CS",
+            "duration": "1営業日",
+            "sopLink": ""
+          },
+          "x": 0,
+          "y": 9,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-02",
+          "label": "カリキュラム案内",
+          "lane": "student",
+          "type": "student",
+          "col": 1,
+          "details": {
+            "procedure": "学習スケジュール・目標を確認",
+            "tools": "OCU・LINE",
+            "owner": "受講生",
+            "duration": "30分",
+            "sopLink": ""
+          },
+          "x": 172,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-03",
+          "label": "日次学習実施",
+          "lane": "student",
+          "type": "student",
+          "col": 2,
+          "details": {
+            "procedure": "毎日の課題・復習をこなす",
+            "tools": "OCUアプリ",
+            "owner": "受講生",
+            "duration": "30分/日",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-04",
+          "label": "週次チェック",
+          "lane": "coach",
+          "type": "coach",
+          "col": 3,
+          "details": {
+            "procedure": "学習進捗・理解度を確認",
+            "tools": "OCU進捗画面",
+            "owner": "コーチ",
+            "duration": "15分/週",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-05",
+          "label": "中間テスト",
+          "lane": "student",
+          "type": "student",
+          "col": 4,
+          "details": {
+            "procedure": "定着度チェックテスト受験",
+            "tools": "OCU",
+            "owner": "受講生",
+            "duration": "60分",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-06",
+          "label": "学習停滞アラート",
+          "lane": "system",
+          "type": "system",
+          "col": 3,
+          "row": 1,
+          "details": {
+            "procedure": "3日未ログインで自動通知",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-07",
+          "label": "フォロー連絡",
+          "lane": "cs",
+          "type": "ops",
+          "col": 4,
+          "row": 1,
+          "details": {
+            "procedure": "停滞受講生へLINE/電話フォロー",
+            "tools": "LINE",
+            "owner": "CS",
+            "duration": "15分",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-08",
+          "label": "OCU修了判定",
+          "lane": "system",
+          "type": "branch",
+          "col": 5,
+          "details": {
+            "procedure": "全カリキュラム完了を確認",
+            "tools": "OCU・GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 860,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "O-09",
+          "label": "OCU卒業・次商品へ",
+          "lane": "cs",
+          "type": "ops",
+          "col": 6,
+          "details": {
+            "procedure": "卒業処理・次フェーズ案内",
+            "tools": "受講生管理スプシ",
+            "owner": "CS",
+            "duration": "30分",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        }
+      ],
+      "edges": [
+        {
+          "from": "O-01",
+          "to": "O-02",
+          "id": "edge-0-O-01-O-02",
+          "edgeType": "normal"
+        },
+        {
+          "from": "O-02",
+          "to": "O-03",
+          "id": "edge-1-O-02-O-03",
+          "edgeType": "normal"
+        },
+        {
+          "from": "O-03",
+          "to": "O-04",
+          "id": "edge-2-O-03-O-04",
+          "edgeType": "normal"
+        },
+        {
+          "from": "O-03",
+          "to": "O-06",
+          "trigger": true,
+          "id": "edge-3-O-03-O-06",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "O-06",
+          "to": "O-07",
+          "id": "edge-4-O-06-O-07",
+          "edgeType": "normal"
+        },
+        {
+          "from": "O-04",
+          "to": "O-05",
+          "id": "edge-5-O-04-O-05",
+          "edgeType": "normal"
+        },
+        {
+          "from": "O-05",
+          "to": "O-08",
+          "id": "edge-6-O-05-O-08",
+          "edgeType": "normal"
+        },
+        {
+          "from": "O-08",
+          "to": "O-09",
+          "id": "edge-7-O-08-O-09",
+          "edgeType": "normal"
+        }
+      ]
+    },
+    "hatten": {
+      "id": "hatten",
+      "label": "ハッテン",
+      "phase": "Phase 2：ハッテン 学習フロー",
+      "nodes": [
+        {
+          "id": "H-01",
+          "label": "テレコム決済",
+          "lane": "student",
+          "type": "student",
+          "col": 0,
+          "details": {
+            "procedure": "",
+            "tools": "ハッテン教材",
+            "owner": "受講生",
+            "duration": "—",
+            "sopLink": ""
+          },
+          "x": 8,
+          "y": 18,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "H-02",
+          "label": "個別相談実施",
+          "lane": "sales",
+          "type": "ops",
+          "col": 0,
+          "row": 1,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "セールス",
+            "duration": "10分",
+            "sopLink": ""
+          },
+          "x": 7,
+          "y": 142,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "H-03",
+          "label": "レベル判定テスト",
+          "lane": "student",
+          "type": "student",
+          "col": 1,
+          "details": {
+            "procedure": "定刻に講義へ参加・発言",
+            "tools": "Zoom",
+            "owner": "受講生",
+            "duration": "90分/回",
+            "sopLink": ""
+          },
+          "x": 745,
+          "y": 19,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "H-04",
+          "label": "音声提出",
+          "lane": "student",
+          "type": "student",
+          "col": 2,
+          "details": {
+            "procedure": "宿題・復習課題を提出",
+            "tools": "提出フォーム",
+            "owner": "受講生",
+            "duration": "60分/週",
+            "sopLink": ""
+          },
+          "x": 958,
+          "y": 19,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "H-05",
+          "label": "講師フィードバック",
+          "lane": "coach",
+          "type": "coach",
+          "col": 3,
+          "details": {
+            "procedure": "課題へのコメント・改善点提示",
+            "tools": "スプシ・LINE",
+            "owner": "講師",
+            "duration": "20分/週",
+            "sopLink": ""
+          },
+          "x": 958,
+          "y": 465,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "H-07",
+          "label": "リアルタイム講義",
+          "lane": "student",
+          "type": "student",
+          "col": 4,
+          "details": {
+            "procedure": "勉強会告知用LINEからの案内リンクから参加",
+            "tools": "",
+            "owner": "受講生",
+            "duration": "45分",
+            "sopLink": ""
+          },
+          "x": 1128,
+          "y": 84,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "H-08",
+          "label": "ハッテン退会",
+          "lane": "system",
+          "type": "student",
+          "col": 5,
+          "details": {
+            "procedure": "ハッテンサイト退会フォームから退会申請",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 1320,
+          "y": 20,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "N-1",
+          "label": "コーチング卒業",
+          "lane": "cs",
+          "type": "ops",
+          "x": 7,
+          "y": 249,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-2",
+          "label": "オフ会",
+          "lane": "student",
+          "type": "student",
+          "x": 1129,
+          "y": 146.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-3",
+          "label": "レベルチェックテスト",
+          "lane": "student",
+          "type": "student",
+          "x": 1126,
+          "y": 18.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-4",
+          "label": "問い合わせ対応",
+          "lane": "cs",
+          "type": "ops",
+          "x": 753,
+          "y": 242.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-5",
+          "label": "UTAGEデータ出力",
+          "lane": "system",
+          "type": "ops",
+          "x": 192,
+          "y": 356,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1mcHS8L_A81hNYrN7uLVF8nJDEfLhwAatRr9qkVuofFY/edit?gid=565759681#gid=565759681"
+          }
+        },
+        {
+          "id": "N-6",
+          "label": "テレコムデータ出力",
+          "lane": "system",
+          "type": "ops",
+          "x": 371,
+          "y": 357,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1mcHS8L_A81hNYrN7uLVF8nJDEfLhwAatRr9qkVuofFY/edit?gid=954593169#gid=954593169"
+          }
+        },
+        {
+          "id": "N-7",
+          "label": "購入者管理シート転記",
+          "lane": "system",
+          "type": "ops",
+          "x": 551,
+          "y": 356.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1mcHS8L_A81hNYrN7uLVF8nJDEfLhwAatRr9qkVuofFY/edit?gid=1494666333#gid=1494666333"
+          }
+        },
+        {
+          "id": "N-8",
+          "label": "決済追い",
+          "lane": "system",
+          "type": "ops",
+          "x": 748,
+          "y": 360,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "テレコムから決済データ出力\n決済エラーになっている人決済追い",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1mcHS8L_A81hNYrN7uLVF8nJDEfLhwAatRr9qkVuofFY/edit?gid=47224384#gid=47224384"
+          }
+        },
+        {
+          "id": "N-10",
+          "label": "UTAGE閲覧停止予約",
+          "lane": "system",
+          "type": "ops",
+          "x": 1320,
+          "y": 355.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-13",
+          "label": "購入者管理シート更新",
+          "lane": "system",
+          "type": "ops",
+          "x": 1864,
+          "y": 352.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1mcHS8L_A81hNYrN7uLVF8nJDEfLhwAatRr9qkVuofFY/edit?gid=1494666333#gid=1494666333"
+          }
+        },
+        {
+          "id": "N-14",
+          "label": "Lステップ退会処理（退会日当日）",
+          "lane": "system",
+          "type": "ops",
+          "x": 1500,
+          "y": 354,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "音声添削用LINE\n勉強会告知用LINE",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-15",
+          "label": "LINE公式の氏名変更（退会日当日）",
+          "lane": "system",
+          "type": "ops",
+          "x": 1680,
+          "y": 355,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-16",
+          "label": "音声添削用LINE追加",
+          "lane": "student",
+          "type": "student",
+          "x": 562,
+          "y": 20.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-17",
+          "label": "勉強会告知用LINE追加",
+          "lane": "student",
+          "type": "student",
+          "x": 381,
+          "y": 19.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "N-18",
+          "label": "リダイレクト・メール案内",
+          "lane": "student",
+          "type": "student",
+          "x": 197,
+          "y": 18.5,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "H-02",
+          "to": "H-01",
+          "id": "edge-0-H-02-H-01",
+          "edgeType": "normal",
+          "fromSide": "top",
+          "bend": {
+            "x": 84,
+            "y": 44.5
+          }
+        },
+        {
+          "from": "H-03",
+          "to": "H-04",
+          "id": "edge-2-H-03-H-04",
+          "edgeType": "normal"
+        },
+        {
+          "from": "H-04",
+          "to": "H-05",
+          "id": "edge-4-H-04-H-05",
+          "edgeType": "normal"
+        },
+        {
+          "id": "edge-1780996061613",
+          "from": "N-1",
+          "to": "H-01",
+          "fromSide": "top",
+          "toSide": "bottom",
+          "edgeType": "normal",
+          "trigger": false,
+          "label": ""
+        },
+        {
+          "id": "edge-1780996772381",
+          "from": "H-01",
+          "to": "N-5",
+          "fromSide": "right",
+          "toSide": "top",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780996783431",
+          "from": "N-5",
+          "to": "N-6",
+          "toSide": "left",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780996789761",
+          "from": "N-6",
+          "to": "N-7",
+          "fromSide": "right",
+          "toSide": "left",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780996939362",
+          "from": "H-08",
+          "to": "N-10",
+          "fromSide": "bottom",
+          "toSide": "top",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780997386134",
+          "from": "N-16",
+          "to": "H-03",
+          "fromSide": "right",
+          "toSide": "left",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780997891627",
+          "from": "H-01",
+          "to": "N-18",
+          "toSide": "left",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780997909522",
+          "from": "N-18",
+          "to": "N-17",
+          "fromSide": "right",
+          "toSide": "left",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-1780997914326",
+          "from": "N-17",
+          "to": "N-16",
+          "fromSide": "right",
+          "toSide": "left",
+          "edgeType": "normal",
+          "trigger": false
+        }
+      ]
+    },
+    "coaching": {
+      "id": "coaching",
+      "label": "コーチング",
+      "phase": "Phase 3：コーチング セッションフロー",
+      "nodes": [
+        {
+          "id": "K-01",
+          "label": "初回セッション実施",
+          "lane": "coach",
+          "type": "coach",
+          "col": 0,
+          "details": {
+            "procedure": "ゴール設定・学習計画策定",
+            "tools": "Zoom・セッション記録シート",
+            "owner": "コーチ",
+            "duration": "60分",
+            "sopLink": ""
+          },
+          "x": 0,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-02",
+          "label": "セッション記録入力",
+          "lane": "coach",
+          "type": "coach",
+          "col": 1,
+          "details": {
+            "procedure": "実施内容・次回課題を記録",
+            "tools": "セッション実施記録",
+            "owner": "コーチ",
+            "duration": "10分",
+            "sopLink": ""
+          },
+          "x": 172,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-03",
+          "label": "日常学習継続",
+          "lane": "student",
+          "type": "student",
+          "col": 2,
+          "details": {
+            "procedure": "コーチからの課題を実践",
+            "tools": "OCU・教材",
+            "owner": "受講生",
+            "duration": "随時",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-04",
+          "label": "定期セッション",
+          "lane": "coach",
+          "type": "coach",
+          "col": 3,
+          "details": {
+            "procedure": "進捗確認・モチベーション支援",
+            "tools": "Zoom",
+            "owner": "コーチ",
+            "duration": "60分/回",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-05",
+          "label": "セッション実施記録",
+          "lane": "system",
+          "type": "system",
+          "col": 1,
+          "row": 1,
+          "details": {
+            "procedure": "記録をマスタへ自動集計",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 172,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-06",
+          "label": "請求書照合準備",
+          "lane": "system",
+          "type": "system",
+          "col": 4,
+          "row": 1,
+          "details": {
+            "procedure": "月次でセッション回数を集計",
+            "tools": "講師管理シート",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-07",
+          "label": "契約期間終了判定",
+          "lane": "system",
+          "type": "branch",
+          "col": 5,
+          "details": {
+            "procedure": "残セッション数・契約満了を確認",
+            "tools": "契約管理スプシ",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 860,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-08",
+          "label": "卒業面談",
+          "lane": "coach",
+          "type": "coach",
+          "col": 6,
+          "details": {
+            "procedure": "振り返り・今後の学習方針を確認",
+            "tools": "Zoom",
+            "owner": "コーチ",
+            "duration": "60分",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-09",
+          "label": "卒業処理",
+          "lane": "cs",
+          "type": "ops",
+          "col": 7,
+          "details": {
+            "procedure": "ステータス更新・アンケート送付",
+            "tools": "受講生管理スプシ",
+            "owner": "CS",
+            "duration": "20分",
+            "sopLink": ""
+          },
+          "x": 1204,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "K-10",
+          "label": "継続意向ヒアリング",
+          "lane": "sales",
+          "type": "ops",
+          "col": 6,
+          "row": 1,
+          "details": {
+            "procedure": "延長・ダウンセル・卒業の意向確認",
+            "tools": "個別相談",
+            "owner": "セールス",
+            "duration": "30分",
+            "sopLink": ""
+          },
+          "x": 1032,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        }
+      ],
+      "edges": [
+        {
+          "from": "K-01",
+          "to": "K-02",
+          "id": "edge-0-K-01-K-02",
+          "edgeType": "normal"
+        },
+        {
+          "from": "K-02",
+          "to": "K-05",
+          "trigger": true,
+          "id": "edge-1-K-02-K-05",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "K-02",
+          "to": "K-03",
+          "id": "edge-2-K-02-K-03",
+          "edgeType": "normal"
+        },
+        {
+          "from": "K-03",
+          "to": "K-04",
+          "id": "edge-3-K-03-K-04",
+          "edgeType": "normal"
+        },
+        {
+          "from": "K-04",
+          "to": "K-06",
+          "trigger": true,
+          "id": "edge-4-K-04-K-06",
+          "edgeType": "trigger"
+        },
+        {
+          "from": "K-04",
+          "to": "K-03",
+          "id": "edge-5-K-04-K-03",
+          "edgeType": "normal"
+        },
+        {
+          "from": "K-07",
+          "to": "K-08",
+          "id": "edge-6-K-07-K-08",
+          "edgeType": "normal"
+        },
+        {
+          "from": "K-08",
+          "to": "K-09",
+          "id": "edge-7-K-08-K-09",
+          "edgeType": "normal"
+        },
+        {
+          "from": "K-07",
+          "to": "K-10",
+          "trigger": true,
+          "id": "edge-8-K-07-K-10",
+          "edgeType": "trigger"
+        }
+      ]
+    },
+    "extension": {
+      "id": "extension",
+      "label": "延長",
+      "phase": "Phase 4：コーチング延長フロー",
+      "nodes": [
+        {
+          "id": "E-01",
+          "label": "延長オファー",
+          "lane": "sales",
+          "type": "ops",
+          "col": 0,
+          "details": {
+            "procedure": "延長プラン・特典を提案",
+            "tools": "個別相談・資料",
+            "owner": "セールス",
+            "duration": "30分",
+            "sopLink": ""
+          },
+          "x": 0,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "E-02",
+          "label": "延長意向確認",
+          "lane": "student",
+          "type": "branch",
+          "col": 1,
+          "details": {
+            "procedure": "延長するか否かを決定",
+            "tools": "—",
+            "owner": "受講生",
+            "duration": "—",
+            "sopLink": ""
+          },
+          "x": 172,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "E-03",
+          "label": "延長契約締結",
+          "lane": "sales",
+          "type": "ops",
+          "col": 2,
+          "details": {
+            "procedure": "契約更新・決済手続き",
+            "tools": "契約管理スプシ",
+            "owner": "セールス",
+            "duration": "20分",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "E-04",
+          "label": "契約情報更新",
+          "lane": "system",
+          "type": "system",
+          "col": 3,
+          "details": {
+            "procedure": "セッション残数・期間を更新",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "E-05",
+          "label": "延長セッション再開",
+          "lane": "coach",
+          "type": "coach",
+          "col": 4,
+          "details": {
+            "procedure": "新ゴール設定・スケジュール調整",
+            "tools": "Zoom",
+            "owner": "コーチ",
+            "duration": "60分",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "E-06",
+          "label": "延長しない",
+          "lane": "cs",
+          "type": "ops",
+          "col": 2,
+          "row": 1,
+          "details": {
+            "procedure": "ダウンセル or 卒業フローへ誘導",
+            "tools": "—",
+            "owner": "CS",
+            "duration": "10分",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        }
+      ],
+      "edges": [
+        {
+          "from": "E-01",
+          "to": "E-02",
+          "id": "edge-0-E-01-E-02",
+          "edgeType": "normal"
+        },
+        {
+          "from": "E-02",
+          "to": "E-03",
+          "label": "延長する",
+          "id": "edge-1-E-02-E-03",
+          "edgeType": "normal"
+        },
+        {
+          "from": "E-03",
+          "to": "E-04",
+          "id": "edge-2-E-03-E-04",
+          "edgeType": "normal"
+        },
+        {
+          "from": "E-04",
+          "to": "E-05",
+          "id": "edge-3-E-04-E-05",
+          "edgeType": "normal"
+        },
+        {
+          "from": "E-02",
+          "to": "E-06",
+          "label": "延長しない",
+          "id": "edge-4-E-02-E-06",
+          "edgeType": "normal"
+        }
+      ]
+    },
+    "downsell": {
+      "id": "downsell",
+      "label": "ハッテンダウンセル",
+      "phase": "Phase 5：ハッテンダウンセルフロー",
+      "nodes": [
+        {
+          "id": "D-01",
+          "label": "ダウンセル提案",
+          "lane": "sales",
+          "type": "ops",
+          "col": 0,
+          "details": {
+            "procedure": "コーチング終了後のハッテン案内",
+            "tools": "提案資料",
+            "owner": "セールス",
+            "duration": "30分",
+            "sopLink": ""
+          },
+          "x": 0,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "D-02",
+          "label": "意向確認",
+          "lane": "student",
+          "type": "branch",
+          "col": 1,
+          "details": {
+            "procedure": "ハッテン受講の可否を決定",
+            "tools": "—",
+            "owner": "受講生",
+            "duration": "—",
+            "sopLink": ""
+          },
+          "x": 171,
+          "y": 17,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "D-03",
+          "label": "ハッテン契約",
+          "lane": "sales",
+          "type": "ops",
+          "col": 2,
+          "details": {
+            "procedure": "プラン変更・決済手続き",
+            "tools": "契約管理スプシ",
+            "owner": "セールス",
+            "duration": "20分",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "D-04",
+          "label": "商品切替処理",
+          "lane": "system",
+          "type": "system",
+          "col": 3,
+          "details": {
+            "procedure": "受講生ステータスをハッテンに変更",
+            "tools": "GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          },
+          "x": 516,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "D-05",
+          "label": "ハッテンオンボーディング",
+          "lane": "cs",
+          "type": "ops",
+          "col": 4,
+          "details": {
+            "procedure": "講義スケジュール・教材案内",
+            "tools": "講義スケジュール管理スプシ",
+            "owner": "CS",
+            "duration": "30分",
+            "sopLink": ""
+          },
+          "x": 688,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "D-06",
+          "label": "ハッテンフローへ合流",
+          "lane": "student",
+          "type": "student",
+          "col": 5,
+          "details": {
+            "procedure": "ハッテン学習を開始",
+            "tools": "ハッテン教材",
+            "owner": "受講生",
+            "duration": "—",
+            "sopLink": ""
+          },
+          "x": 860,
+          "y": 8,
+          "w": 160,
+          "h": 56
+        },
+        {
+          "id": "D-07",
+          "label": "完全卒業",
+          "lane": "cs",
+          "type": "ops",
+          "col": 2,
+          "row": 1,
+          "details": {
+            "procedure": "サポート終了・アンケート・卒業証",
+            "tools": "受講生管理スプシ",
+            "owner": "CS",
+            "duration": "20分",
+            "sopLink": ""
+          },
+          "x": 344,
+          "y": 76,
+          "w": 160,
+          "h": 56
+        }
+      ],
+      "edges": [
+        {
+          "from": "D-01",
+          "to": "D-02",
+          "id": "edge-0-D-01-D-02",
+          "edgeType": "normal"
+        },
+        {
+          "from": "D-02",
+          "to": "D-03",
+          "label": "受講する",
+          "id": "edge-1-D-02-D-03",
+          "edgeType": "normal"
+        },
+        {
+          "from": "D-03",
+          "to": "D-04",
+          "id": "edge-2-D-03-D-04",
+          "edgeType": "normal"
+        },
+        {
+          "from": "D-04",
+          "to": "D-05",
+          "id": "edge-3-D-04-D-05",
+          "edgeType": "normal"
+        },
+        {
+          "from": "D-05",
+          "to": "D-06",
+          "id": "edge-4-D-05-D-06",
+          "edgeType": "normal"
+        },
+        {
+          "from": "D-02",
+          "to": "D-07",
+          "label": "受講しない",
+          "id": "edge-5-D-02-D-07",
+          "edgeType": "normal"
+        }
+      ]
+    }
+  }
+};

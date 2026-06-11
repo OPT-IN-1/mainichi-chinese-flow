@@ -385,6 +385,7 @@
   </div>
 </div>
 
+<script src="published-data.js"></script>
 <script>
 const LANES = [
   { id: 'student', label: '受講生' },
@@ -593,14 +594,27 @@ function loadFromLocalStorage() {
   return null;
 }
 
+function getEmbeddedPublishedData() {
+  if (window.PUBLISHED_DATA?.flows) {
+    return JSON.parse(JSON.stringify(window.PUBLISHED_DATA));
+  }
+  return null;
+}
+
 async function fetchPublishedData() {
   try {
     const res = await fetch(PUBLISHED_DATA_FILE + '?t=' + Date.now());
     if (!res.ok) return null;
     return JSON.parse(await res.text());
   } catch (e) {
-    return null;
+    return getEmbeddedPublishedData();
   }
+}
+
+function isNewerData(a, b) {
+  if (!a?.meta?.updatedAt) return false;
+  if (!b?.meta?.updatedAt) return true;
+  return new Date(a.meta.updatedAt) > new Date(b.meta.updatedAt);
 }
 
 async function loadData() {
@@ -612,6 +626,17 @@ async function loadData() {
   }
 
   const local = loadFromLocalStorage();
+  const embedded = getEmbeddedPublishedData();
+
+  // ローカル: 前回公開した編集データを優先（localStorageより新しい場合）
+  if (embedded?.flows) {
+    migrateAll(embedded);
+    if (!local?.flows || isNewerData(embedded, local)) {
+      publishedMeta = embedded.meta || null;
+      return embedded;
+    }
+  }
+
   if (local?.flows) {
     migrateAll(local);
     return local;
@@ -1806,6 +1831,10 @@ async function initApp() {
   migrateAll(data);
   if (isWebViewer() && data.flows[PUBLIC_VIEW_FLOW]) {
     currentFlowId = PUBLIC_VIEW_FLOW;
+  }
+  // ローカルで公開データを読み込んだ場合、localStorage に同期
+  if (!isWebViewer() && getEmbeddedPublishedData() && isNewerData(data, loadFromLocalStorage())) {
+    saveData();
   }
   render();
 }
