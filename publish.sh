@@ -9,8 +9,14 @@ if [[ ! -f published-data.json ]]; then
   exit 1
 fi
 
-git add published-data.json index.html 2>/dev/null || true
-git add published-data.json
+# ローカル file:// でも編集データを読めるよう JS に変換
+NODE="/Applications/Cursor.app/Contents/Resources/app/resources/helpers/node"
+if [[ -x "$NODE" ]]; then
+  "$NODE" -e "const fs=require('fs');const d=fs.readFileSync('published-data.json','utf8');fs.writeFileSync('published-data.js','window.PUBLISHED_DATA='+d+';\n');"
+fi
+
+git add published-data.json published-data.js index.html 2>/dev/null || true
+git add published-data.json published-data.js
 
 if git diff --cached --quiet; then
   echo "変更なし（すでに最新）"
