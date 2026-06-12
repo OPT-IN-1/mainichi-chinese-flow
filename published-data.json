@@ -2,7 +2,7 @@
   "meta": {
     "title": "毎日中国語 全体フロー",
     "version": 1,
-    "updatedAt": "2026-06-09T11:07:20.281Z",
+    "updatedAt": "2026-06-12T03:40:59.025Z",
     "publishedBy": "manual-export"
   },
   "flows": {
@@ -1234,8 +1234,314 @@
     "coaching": {
       "id": "coaching",
       "label": "コーチング",
-      "phase": "Phase 3：コーチング セッションフロー",
+      "phase": "Phase 3：コーチング（初回セッション以前〜セッション）",
       "nodes": [
+        {
+          "id": "KB-00",
+          "label": "成約完了",
+          "lane": "sales",
+          "type": "ops",
+          "col": 0,
+          "x": 20,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "個別相談会を経て成約。顧客管理シートへ情報が講師に伝わる起点。",
+            "tools": "",
+            "owner": "セールス",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-01",
+          "label": "フォーム入力（性格など）",
+          "lane": "sales",
+          "type": "ops",
+          "col": 1,
+          "x": 204,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "成約後フォームに性格などを入力",
+            "tools": "成約後フォーム",
+            "owner": "セールス",
+            "duration": "10分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-02",
+          "label": "顧客管理シート自動反映",
+          "lane": "system",
+          "type": "system",
+          "col": 2,
+          "x": 388,
+          "y": 350,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "個別相談でセールスが入力した内容を顧客管理シートへ自動反映。\nグループ作成が必要な人の管理もここで行う。",
+            "tools": "顧客管理シート・GAS",
+            "owner": "システム",
+            "duration": "自動",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-03",
+          "label": "滝田さんチェック",
+          "lane": "cs",
+          "type": "ops",
+          "col": 3,
+          "x": 572,
+          "y": 240,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "顧客管理シートの内容をチェック",
+            "tools": "顧客管理シート",
+            "owner": "滝田さん",
+            "duration": "随時",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-04",
+          "label": "動画リンク貼り付け",
+          "lane": "sales",
+          "type": "ops",
+          "col": 4,
+          "x": 756,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "セールス動画リンクを顧客管理シートに貼り付け",
+            "tools": "顧客管理シート",
+            "owner": "セールス",
+            "duration": "5分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-05",
+          "label": "コーチングシート作成",
+          "lane": "sales",
+          "type": "ops",
+          "col": 5,
+          "x": 940,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "コーチングシートをコピー→ファイルの氏名変更→リンク保管。\nレベル判定して貼り付け（レベル感が違ったら変更OK）",
+            "tools": "コーチングシート",
+            "owner": "セールス",
+            "duration": "15分",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1SW6A5YBMwLndPYgX__I62Y47oXe8rKK5uHVbkUfpgTE/edit?pli=1&gid=1702339758#gid=1702339758"
+          }
+        },
+        {
+          "id": "KB-06",
+          "label": "実績者・講師管理シート反映",
+          "lane": "sales",
+          "type": "ops",
+          "col": 6,
+          "x": 1124,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "実績者シート・講師管理シートに氏名を貼り付け",
+            "tools": "実績者シート・講師管理シート",
+            "owner": "セールス",
+            "duration": "5分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-07",
+          "label": "お支払い完了（成約報告）",
+          "lane": "sales",
+          "type": "ops",
+          "col": 7,
+          "x": 1308,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "お支払い完了を確認し成約報告",
+            "tools": "顧客管理シート",
+            "owner": "セールス",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KC-01",
+          "label": "顧客管理シート確認",
+          "lane": "coach",
+          "type": "coach",
+          "col": 8,
+          "x": 1492,
+          "y": 460,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "講師用の顧客管理シートを確認",
+            "tools": "顧客管理シート",
+            "owner": "講師",
+            "duration": "15分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KC-02",
+          "label": "担当可否回答",
+          "lane": "coach",
+          "type": "coach",
+          "col": 9,
+          "x": 1676,
+          "y": 460,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "担当可否を回答",
+            "tools": "顧客管理シート",
+            "owner": "講師",
+            "duration": "10分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KC-03",
+          "label": "アサイン確定",
+          "lane": "cs",
+          "type": "ops",
+          "col": 10,
+          "x": 1860,
+          "y": 240,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "講師欄に講師名入力→アサイン者確定",
+            "tools": "顧客管理シート",
+            "owner": "CS",
+            "duration": "10分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KB-08",
+          "label": "グループ作成管理",
+          "lane": "cs",
+          "type": "ops",
+          "col": 11,
+          "x": 2044,
+          "y": 240,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "グループ作成の必要がある人を管理・作成",
+            "tools": "顧客管理シート",
+            "owner": "CS",
+            "duration": "15分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KS-01",
+          "label": "広辺さんLINE追加",
+          "lane": "student",
+          "type": "student",
+          "col": 12,
+          "x": 2228,
+          "y": 20,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "広辺さんのLINEを友だち追加",
+            "tools": "LINE",
+            "owner": "受講生",
+            "duration": "5分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KS-02",
+          "label": "フルネーム送信",
+          "lane": "student",
+          "type": "student",
+          "col": 13,
+          "x": 2412,
+          "y": 20,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "フルネームを送付",
+            "tools": "LINE",
+            "owner": "受講生",
+            "duration": "3分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KS-03",
+          "label": "グループ作成",
+          "lane": "cs",
+          "type": "ops",
+          "col": 14,
+          "x": 2596,
+          "y": 240,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "LINEグループを作成",
+            "tools": "LINE",
+            "owner": "CS",
+            "duration": "10分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "KS-04",
+          "label": "コーチングシートURL送付",
+          "lane": "coach",
+          "type": "coach",
+          "col": 15,
+          "x": 2780,
+          "y": 460,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "LINEでコーチングシートのURLを送付",
+            "tools": "LINE・コーチングシート",
+            "owner": "コーチ/CS",
+            "duration": "5分",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1SW6A5YBMwLndPYgX__I62Y47oXe8rKK5uHVbkUfpgTE/edit?pli=1&gid=1702339758#gid=1702339758"
+          }
+        },
+        {
+          "id": "KS-05",
+          "label": "スケジュール欄入力",
+          "lane": "student",
+          "type": "student",
+          "col": 16,
+          "x": 2964,
+          "y": 20,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "コーチングシートの「現在のスケジュール」欄を入力",
+            "tools": "コーチングシート",
+            "owner": "受講生",
+            "duration": "10分",
+            "sopLink": "https://docs.google.com/spreadsheets/d/1SW6A5YBMwLndPYgX__I62Y47oXe8rKK5uHVbkUfpgTE/edit?pli=1&gid=1702339758#gid=1702339758"
+          }
+        },
         {
           "id": "K-01",
           "label": "初回セッション実施",
@@ -1249,7 +1555,7 @@
             "duration": "60分",
             "sopLink": ""
           },
-          "x": 0,
+          "x": 3128,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1267,7 +1573,7 @@
             "duration": "10分",
             "sopLink": ""
           },
-          "x": 172,
+          "x": 3300,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1285,7 +1591,7 @@
             "duration": "随時",
             "sopLink": ""
           },
-          "x": 344,
+          "x": 3472,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1303,7 +1609,7 @@
             "duration": "60分/回",
             "sopLink": ""
           },
-          "x": 516,
+          "x": 3644,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1322,7 +1628,7 @@
             "duration": "自動",
             "sopLink": ""
           },
-          "x": 172,
+          "x": 3300,
           "y": 76,
           "w": 160,
           "h": 56
@@ -1341,7 +1647,7 @@
             "duration": "自動",
             "sopLink": ""
           },
-          "x": 688,
+          "x": 3816,
           "y": 76,
           "w": 160,
           "h": 56
@@ -1359,7 +1665,7 @@
             "duration": "自動",
             "sopLink": ""
           },
-          "x": 860,
+          "x": 3988,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1377,7 +1683,7 @@
             "duration": "60分",
             "sopLink": ""
           },
-          "x": 1032,
+          "x": 4160,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1395,7 +1701,7 @@
             "duration": "20分",
             "sopLink": ""
           },
-          "x": 1204,
+          "x": 4332,
           "y": 8,
           "w": 160,
           "h": 56
@@ -1414,13 +1720,132 @@
             "duration": "30分",
             "sopLink": ""
           },
-          "x": 1032,
+          "x": 4160,
           "y": 76,
           "w": 160,
           "h": 56
         }
       ],
       "edges": [
+        {
+          "id": "edge-KB-00-KB-01",
+          "from": "KB-00",
+          "to": "KB-01",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-01-KB-02",
+          "from": "KB-01",
+          "to": "KB-02",
+          "edgeType": "trigger",
+          "trigger": true
+        },
+        {
+          "id": "edge-KB-02-KB-03",
+          "from": "KB-02",
+          "to": "KB-03",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-03-KB-04",
+          "from": "KB-03",
+          "to": "KB-04",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-04-KB-05",
+          "from": "KB-04",
+          "to": "KB-05",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-05-KB-06",
+          "from": "KB-05",
+          "to": "KB-06",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-06-KB-07",
+          "from": "KB-06",
+          "to": "KB-07",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-07-KC-01",
+          "from": "KB-07",
+          "to": "KC-01",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KC-01-KC-02",
+          "from": "KC-01",
+          "to": "KC-02",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KC-02-KC-03",
+          "from": "KC-02",
+          "to": "KC-03",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KC-03-KB-08",
+          "from": "KC-03",
+          "to": "KB-08",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KB-08-KS-01",
+          "from": "KB-08",
+          "to": "KS-01",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KS-01-KS-02",
+          "from": "KS-01",
+          "to": "KS-02",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KS-02-KS-03",
+          "from": "KS-02",
+          "to": "KS-03",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KS-03-KS-04",
+          "from": "KS-03",
+          "to": "KS-04",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KS-04-KS-05",
+          "from": "KS-04",
+          "to": "KS-05",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-KS-05-K-01",
+          "from": "KS-05",
+          "to": "K-01",
+          "edgeType": "normal",
+          "trigger": false
+        },
         {
           "from": "K-01",
           "to": "K-02",
@@ -1487,146 +1912,223 @@
       "nodes": [
         {
           "id": "E-01",
-          "label": "延長オファー",
-          "lane": "sales",
-          "type": "ops",
+          "label": "延長意向連絡",
+          "lane": "student",
+          "type": "student",
           "col": 0,
-          "details": {
-            "procedure": "延長プラン・特典を提案",
-            "tools": "個別相談・資料",
-            "owner": "セールス",
-            "duration": "30分",
-            "sopLink": ""
-          },
-          "x": 0,
-          "y": 8,
+          "x": 20,
+          "y": 20,
           "w": 160,
-          "h": 56
+          "h": 56,
+          "details": {
+            "procedure": "生徒と講師が広辺さんにLINEで連絡",
+            "tools": "LINE",
+            "owner": "受講生・講師",
+            "duration": "",
+            "sopLink": ""
+          }
         },
         {
           "id": "E-02",
-          "label": "延長意向確認",
-          "lane": "student",
-          "type": "branch",
+          "label": "滝田さんが進行",
+          "lane": "cs",
+          "type": "ops",
           "col": 1,
-          "details": {
-            "procedure": "延長するか否かを決定",
-            "tools": "—",
-            "owner": "受講生",
-            "duration": "—",
-            "sopLink": ""
-          },
-          "x": 172,
-          "y": 8,
+          "x": 204,
+          "y": 240,
           "w": 160,
-          "h": 56
+          "h": 56,
+          "details": {
+            "procedure": "延長手続きを滝田さんが進める",
+            "tools": "顧客管理シート",
+            "owner": "滝田さん",
+            "duration": "随時",
+            "sopLink": ""
+          }
         },
         {
           "id": "E-03",
-          "label": "延長契約締結",
-          "lane": "sales",
+          "label": "日程調整",
+          "lane": "cs",
           "type": "ops",
           "col": 2,
-          "details": {
-            "procedure": "契約更新・決済手続き",
-            "tools": "契約管理スプシ",
-            "owner": "セールス",
-            "duration": "20分",
-            "sopLink": ""
-          },
-          "x": 344,
-          "y": 8,
+          "x": 388,
+          "y": 240,
           "w": 160,
-          "h": 56
+          "h": 56,
+          "details": {
+            "procedure": "広辺さんのLINEワークスで日程調整",
+            "tools": "LINE WORKS",
+            "owner": "広辺さん",
+            "duration": "随時",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "E-07",
+          "label": "決済追い（延長）",
+          "lane": "cs",
+          "type": "ops",
+          "col": 2,
+          "x": 388,
+          "y": null,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "",
+            "tools": "",
+            "owner": "",
+            "duration": "",
+            "sopLink": ""
+          }
         },
         {
           "id": "E-04",
-          "label": "契約情報更新",
-          "lane": "system",
-          "type": "system",
+          "label": "Zoom契約・支払い",
+          "lane": "sales",
+          "type": "ops",
           "col": 3,
-          "details": {
-            "procedure": "セッション残数・期間を更新",
-            "tools": "GAS",
-            "owner": "システム",
-            "duration": "自動",
-            "sopLink": ""
-          },
-          "x": 516,
-          "y": 8,
+          "x": 572,
+          "y": 130,
           "w": 160,
-          "h": 56
+          "h": 56,
+          "details": {
+            "procedure": "西脇さんがZoomで契約書を巻く・支払い案内",
+            "tools": "Zoom",
+            "owner": "西脇さん",
+            "duration": "30分",
+            "sopLink": ""
+          }
         },
         {
           "id": "E-05",
+          "label": "お支払い完了",
+          "lane": "sales",
+          "type": "branch",
+          "col": 4,
+          "x": 756,
+          "y": 130,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "お支払い完了を確認",
+            "tools": "",
+            "owner": "セールス",
+            "duration": "",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "E-06",
+          "label": "LINEピン留め",
+          "lane": "cs",
+          "type": "ops",
+          "col": 5,
+          "x": 940,
+          "y": 240,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "広辺さんのLINEでピン留め",
+            "tools": "LINE",
+            "owner": "CS/広辺さん",
+            "duration": "3分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "E-08",
+          "label": "延長退会手続き",
+          "lane": "system",
+          "type": "system",
+          "col": 6,
+          "x": 1124,
+          "y": 350,
+          "w": 160,
+          "h": 56,
+          "details": {
+            "procedure": "バックオフィス＞延長手続き",
+            "tools": "バックオフィス",
+            "owner": "CS",
+            "duration": "10分",
+            "sopLink": ""
+          }
+        },
+        {
+          "id": "E-09",
           "label": "延長セッション再開",
           "lane": "coach",
           "type": "coach",
-          "col": 4,
+          "col": 7,
+          "x": 1308,
+          "y": 460,
+          "w": 160,
+          "h": 56,
           "details": {
-            "procedure": "新ゴール設定・スケジュール調整",
+            "procedure": "延長後のコーチングセッション再開",
             "tools": "Zoom",
             "owner": "コーチ",
             "duration": "60分",
             "sopLink": ""
-          },
-          "x": 688,
-          "y": 8,
-          "w": 160,
-          "h": 56
-        },
-        {
-          "id": "E-06",
-          "label": "延長しない",
-          "lane": "cs",
-          "type": "ops",
-          "col": 2,
-          "row": 1,
-          "details": {
-            "procedure": "ダウンセル or 卒業フローへ誘導",
-            "tools": "—",
-            "owner": "CS",
-            "duration": "10分",
-            "sopLink": ""
-          },
-          "x": 344,
-          "y": 76,
-          "w": 160,
-          "h": 56
+          }
         }
       ],
       "edges": [
         {
+          "id": "edge-E-01-E-02",
           "from": "E-01",
           "to": "E-02",
-          "id": "edge-0-E-01-E-02",
-          "edgeType": "normal"
+          "edgeType": "normal",
+          "trigger": false
         },
         {
+          "id": "edge-E-02-E-03",
           "from": "E-02",
           "to": "E-03",
-          "label": "延長する",
-          "id": "edge-1-E-02-E-03",
-          "edgeType": "normal"
+          "edgeType": "normal",
+          "trigger": false
         },
         {
+          "id": "edge-E-03-E-04",
           "from": "E-03",
           "to": "E-04",
-          "id": "edge-2-E-03-E-04",
-          "edgeType": "normal"
+          "edgeType": "normal",
+          "trigger": false
         },
         {
+          "id": "edge-E-03-E-07",
+          "from": "E-03",
+          "to": "E-07",
+          "edgeType": "trigger",
+          "trigger": true
+        },
+        {
+          "id": "edge-E-07-E-04",
+          "from": "E-07",
+          "to": "E-04",
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-E-04-E-05",
           "from": "E-04",
           "to": "E-05",
-          "id": "edge-3-E-04-E-05",
-          "edgeType": "normal"
+          "edgeType": "normal",
+          "trigger": false
         },
         {
-          "from": "E-02",
+          "id": "edge-E-05-E-06",
+          "from": "E-05",
           "to": "E-06",
-          "label": "延長しない",
-          "id": "edge-4-E-02-E-06",
-          "edgeType": "normal"
+          "edgeType": "normal",
+          "trigger": false
+        },
+        {
+          "id": "edge-E-06-E-09",
+          "from": "E-06",
+          "to": "E-09",
+          "edgeType": "normal",
+          "trigger": false
         }
       ]
     },
